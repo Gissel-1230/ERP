@@ -6,7 +6,7 @@ import {
   ArrowRightLeft,
   ShoppingCart,
   Users,
-  ClipboardList, // Icono actualizado para Requisición
+  ClipboardList, 
   Settings,
   LogOut,
 } from 'lucide-react';
@@ -18,7 +18,6 @@ const navItems = [
   { href: '/dashboard/almacenes', icon: Warehouse, label: 'Almacenes' },
   { href: '/dashboard/traspasos', icon: ArrowRightLeft, label: 'Traspasos' },
   { href: '/dashboard/ventas', icon: ShoppingCart, label: 'Ventas' },
-  { href: '/dashboard/rrhh', icon: Users, label: 'Recursos Humanos' },
   // highlight-start
   { href: '/dashboard/requisicion', icon: ClipboardList, label: 'Requisición' },
   // highlight-end

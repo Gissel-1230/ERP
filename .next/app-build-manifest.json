@@ -21,6 +21,11 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/page.js"
     ],
+    "/dashboard/ventas/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/ventas/page.js"
+    ],
     "/dashboard/almacenes/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -30,6 +35,11 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/almacenes/[id]/page.js"
+    ],
+    "/dashboard/almacenes/[id]/[inventarioId]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/almacenes/[id]/[inventarioId]/page.js"
     ]
   }
 }

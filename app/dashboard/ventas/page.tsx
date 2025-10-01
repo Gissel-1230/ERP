@@ -1,61 +1,63 @@
 // app/dashboard/ventas/page.tsx
 
-import { DollarSign, Users, ShoppingCart, PackageMinus } from 'lucide-react';
-import StatCard from '@/components/ui/stat-card';
-import RevenueChart from '@/components/ui/revenue-chart';
-import RecentSales from '@/components/ui/recent-sales';
+"use client";
+
+import { useState } from "react";
+import SalesDashboardView from "@/components/ventas/SalesDashboardView";
+import OrdenesDeCompraView from "@/components/ventas/OrdenesDeCompraView";
+// highlight-next-line
+import EstadoVentasView from "@/components/ventas/EstadoVentasView"; // Importamos el nuevo componente
 
 export default function VentasPage() {
+  const [activeTab, setActiveTab] = useState<
+    "dashboard" | "ordenes" | "estado"
+  >("dashboard");
+
+  const tabs = [
+    { id: "dashboard", label: "Dashboard de Ventas" },
+    { id: "ordenes", label: "Órdenes de Compra" },
+    // highlight-next-line
+    { id: "estado", label: "Estado de Ventas" }, // Nueva pestaña
+  ];
+
   return (
-    <div className="flex flex-col gap-8">
-      {/* -- Encabezado de la Página -- */}
+    <div className="flex flex-col gap-6">
+      {/* -- Encabezado Principal del Módulo -- */}
       <div>
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
           Módulo de Ventas
         </h1>
         <p className="mt-1 text-slate-600 dark:text-slate-400">
-          Un resumen general de la actividad comercial y el rendimiento.
+          Visualiza métricas y gestiona las órdenes de compra.
         </p>
       </div>
 
-      {/* -- Sección de KPIs (Métricas Clave) -- */}
-      <section className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          title="Ventas Totales (Mes)"
-          value="$45,231.89"
-          change="+20.1% vs mes anterior"
-          icon={DollarSign}
-        />
-        <StatCard
-          title="Nuevos Clientes"
-          value="+2,350"
-          change="+180.1% vs mes anterior"
-          icon={Users}
-        />
-        <StatCard
-          title="Ventas Realizadas"
-          value="+12,234"
-          change="+19% vs mes anterior"
-          icon={ShoppingCart}
-        />
-        <StatCard
-          title="Productos con Bajo Stock"
-          value="57"
-          change="Revisar inventario"
-          icon={PackageMinus}
-          variant="danger"
-        />
-      </section>
+      {/* -- Navegación de Pestañas -- */}
+      <div className="border-b border-slate-200 dark:border-slate-700">
+        <nav className="-mb-px flex space-x-6" aria-label="Tabs">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`${
+                activeTab === tab.id
+                  ? "border-indigo-500 text-indigo-600"
+                  : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700"
+              } whitespace-nowrap border-b-2 px-1 py-3 text-sm font-medium transition-colors`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
+      </div>
 
-      {/* -- Sección de Gráficos y Actividad Reciente -- */}
-      <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <RevenueChart />
-        </div>
-        <div>
-          <RecentSales />
-        </div>
-      </section>
+      {/* -- Contenido de la Pestaña Activa -- */}
+      <div className="mt-4">
+        {activeTab === "dashboard" && <SalesDashboardView />}
+        {activeTab === "ordenes" && <OrdenesDeCompraView />}
+        {/* highlight-next-line */}
+        {activeTab === "estado" && <EstadoVentasView />}
+      </div>
     </div>
   );
 }

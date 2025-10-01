@@ -1,34 +1,38 @@
 // app/dashboard/almacenes/page.tsx
-
 "use client";
 
-import { useState } from 'react'; // Eliminamos useEffect
+import { useState, useEffect } from 'react';
 import { Plus, Search } from 'lucide-react';
-import AlmacenesTable from '@/components/almacenes/AlmacenesTable';
 import AddEditAlmacenModal from '@/components/almacenes/AddEditAlmacenModal';
 import { getAlmacenes, saveAlmacen, deleteAlmacenById } from '@/lib/almacen-store';
 import { type Almacen } from '@/lib/data';
+import AlmacenCard from '@/components/almacenes/AlmacenCard';
 
 export default function AlmacenesPage() {
-  // highlight-start
-  // Inicializamos el estado directamente con los datos del store.
-  const [almacenes, setAlmacenes] = useState<Almacen[]>(() => getAlmacenes());
-  // highlight-end
-  
+  const [almacenes, setAlmacenes] = useState<Almacen[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [almacenToEdit, setAlmacenToEdit] = useState<Almacen | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Ya no necesitamos useEffect para cargar los datos iniciales.
+  useEffect(() => {
+    setAlmacenes(getAlmacenes());
+  }, []);
 
-  const refreshAlmacenes = () => {
-    // Obtenemos una nueva copia de los datos desde el store para forzar el re-renderizado.
-    setAlmacenes([...getAlmacenes()]);
-  };
+  const refreshAlmacenes = () => setAlmacenes([...getAlmacenes()]);
 
-  const handleSave = (data: Omit<Almacen, 'id' | 'materiaPrima' | 'productos' | 'insumos'>, id?: string) => {
+  const handleSave = (data: Omit<Almacen, 'id' | 'inventario'>, id?: string) => {
     saveAlmacen(data, id);
     refreshAlmacenes();
+  };
+
+  const handleOpenEditModal = (almacen: Almacen) => {
+    setAlmacenToEdit(almacen);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenAddModal = () => {
+    setAlmacenToEdit(null);
+    setIsModalOpen(true);
   };
 
   const handleDelete = (id: string) => {
@@ -37,25 +41,12 @@ export default function AlmacenesPage() {
       refreshAlmacenes();
     }
   };
-
-  const handleOpenEditModal = (almacen: Almacen) => {
-    setAlmacenToEdit(almacen);
-    setIsModalOpen(true);
-  };
-  
-  const handleOpenAddModal = () => {
-    setAlmacenToEdit(null);
-    setIsModalOpen(true);
-  };
   
   const filteredAlmacenes = almacenes.filter(almacen => {
     const query = searchQuery.toLowerCase();
     return (
       almacen.nombre.toLowerCase().includes(query) ||
-      almacen.ubicacion.toLowerCase().includes(query) ||
-      almacen.materiaPrima.some(item => item.nombre.toLowerCase().includes(query)) ||
-      almacen.productos.some(item => item.nombre.toLowerCase().includes(query)) ||
-      almacen.insumos.some(item => item.nombre.toLowerCase().includes(query))
+      almacen.ubicacion.toLowerCase().includes(query)
     );
   });
 
@@ -79,18 +70,18 @@ export default function AlmacenesPage() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
         <input
           type="text"
-          placeholder="Buscar por almacén, producto, insumo..."
+          placeholder="Buscar por nombre o ubicación..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full rounded-lg border border-slate-300 py-2 pl-10 pr-4 focus:border-indigo-500 focus:ring-indigo-500 dark:bg-slate-700 dark:border-slate-600"
         />
       </div>
 
-      <AlmacenesTable
-        almacenes={filteredAlmacenes}
-        onEdit={handleOpenEditModal}
-        onDelete={handleDelete}
-      />
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {filteredAlmacenes.map(almacen => (
+          <AlmacenCard key={almacen.id} almacen={almacen} />
+        ))}
+      </div>
       
       <AddEditAlmacenModal
         isOpen={isModalOpen}
