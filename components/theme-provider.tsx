@@ -29,16 +29,28 @@ export function ThemeProvider({
   storageKey = "databridge-ui-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(() => (localStorage?.getItem(storageKey) as Theme) || defaultTheme)
+  const [theme, setTheme] = useState<Theme>(defaultTheme)
+
+  // on client mount, read saved theme from localStorage
+  useEffect(() => {
+    try {
+      if (typeof window !== "undefined" && typeof window.localStorage !== "undefined") {
+        const saved = window.localStorage.getItem(storageKey) as Theme | null
+        if (saved) setTheme(saved)
+      }
+    } catch {
+      // silenciar errores de acceso a localStorage (ej. modos privados)
+    }
+  }, [storageKey])
 
   useEffect(() => {
-    const root = window.document.documentElement
+    if (typeof window === "undefined") return
 
+    const root = window.document.documentElement
     root.classList.remove("light", "dark")
 
     if (theme === "system") {
       const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
-
       root.classList.add(systemTheme)
       return
     }
@@ -48,9 +60,15 @@ export function ThemeProvider({
 
   const value = {
     theme,
-    setTheme: (theme: Theme) => {
-      localStorage?.setItem(storageKey, theme)
-      setTheme(theme)
+    setTheme: (newTheme: Theme) => {
+      try {
+        if (typeof window !== "undefined" && typeof window.localStorage !== "undefined") {
+          window.localStorage.setItem(storageKey, newTheme)
+        }
+      } catch {
+        // ignorar fallos de escritura
+      }
+      setTheme(newTheme)
     },
   }
 
