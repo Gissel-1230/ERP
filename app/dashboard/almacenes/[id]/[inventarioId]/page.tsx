@@ -3,12 +3,12 @@
 
 import { useState, useEffect } from 'react';
 import { notFound, useParams } from 'next/navigation';
-import { getInventarioById, addProductoToInventario } from '@/lib/almacen-store';
+import { getInventarioById, addProductoToInventario, updateProductoInInventario, deleteProductoFromInventario } from '@/lib/almacen-store';
 import { type Inventario, type Producto } from '@/lib/data';
 import { Plus, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import ProductosTable from '@/components/almacenes/ProductosTable';
-import AddProductoModal from '@/components/almacenes/AddProductoModal';
+import AddEditProductoModal from '@/components/almacenes/AddEditProductoModal'; // Renombrado
 
 export default function InventarioDetailPage() {
   const params = useParams();
@@ -17,6 +17,7 @@ export default function InventarioDetailPage() {
 
   const [inventario, setInventario] = useState<Inventario | null | undefined>(undefined);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [productoToEdit, setProductoToEdit] = useState<Producto | null>(null);
 
   useEffect(() => {
     setInventario(getInventarioById(almacenId, inventarioId));
@@ -26,9 +27,30 @@ export default function InventarioDetailPage() {
     setInventario({ ...getInventarioById(almacenId, inventarioId)! });
   };
   
-  const handleAddProducto = (productoData: Omit<Producto, 'id'>) => {
-    addProductoToInventario(almacenId, inventarioId, productoData);
+  const handleSaveProducto = (productoData: Omit<Producto, 'id'>, id?: string) => {
+    if (id) {
+      updateProductoInInventario(almacenId, inventarioId, id, productoData);
+    } else {
+      addProductoToInventario(almacenId, inventarioId, productoData);
+    }
     refreshProductos();
+  };
+
+  const handleDeleteProducto = (productoId: string) => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+      deleteProductoFromInventario(almacenId, inventarioId, productoId);
+      refreshProductos();
+    }
+  };
+
+  const handleOpenEditModal = (producto: Producto) => {
+    setProductoToEdit(producto);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenAddModal = () => {
+    setProductoToEdit(null);
+    setIsModalOpen(true);
   };
 
   if (inventario === undefined) return <div>Cargando...</div>;
@@ -48,7 +70,7 @@ export default function InventarioDetailPage() {
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold">Productos en Inventario</h3>
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleOpenAddModal}
             className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700"
           >
             <Plus className="h-5 w-5" />
@@ -56,14 +78,19 @@ export default function InventarioDetailPage() {
           </button>
         </div>
         <div className="mt-4">
-          <ProductosTable inventario={inventario.productos} />
+          <ProductosTable 
+            inventario={inventario.productos}
+            onEdit={handleOpenEditModal}
+            onDelete={handleDeleteProducto}
+          />
         </div>
       </div>
       
-      <AddProductoModal
+      <AddEditProductoModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSave={handleAddProducto}
+        onSave={handleSaveProducto}
+        productoToEdit={productoToEdit}
       />
     </div>
   );

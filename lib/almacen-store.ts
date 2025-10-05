@@ -1,5 +1,6 @@
 import { initialAlmacenes, type Almacen, type Inventario, type Producto } from './data';
 
+
 // Creamos una copia profunda de los datos para evitar mutar el array original al importarlo.
 // Esto asegura que nuestro "store" se comporte como una base de datos en memoria independiente.
 let almacenesEnMemoria: Almacen[] = JSON.parse(JSON.stringify(initialAlmacenes));
@@ -80,5 +81,22 @@ export const addProductoToInventario = (almacenId: string, inventarioId: string,
       ...productoData,
     };
     inventario.productos.push(newProducto);
+  }
+};
+
+// --- NUEVAS FUNCIONES PARA EDITAR Y ELIMINAR PRODUCTOS ---
+export const updateProductoInInventario = (almacenId: string, inventarioId: string, productoId: string, productoData: Omit<Producto, 'id'>) => {
+  const inventario = getInventarioById(almacenId, inventarioId);
+  if (inventario) {
+    inventario.productos = inventario.productos.map(p => 
+      p.id === productoId ? { ...p, ...productoData } : p
+    );
+  }
+};
+
+export const deleteProductoFromInventario = (almacenId: string, inventarioId: string, productoId: string) => {
+  const inventario = getInventarioById(almacenId, inventarioId);
+  if (inventario) {
+    inventario.productos = inventario.productos.filter(p => p.id !== productoId);
   }
 };
