@@ -16,17 +16,41 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null); // Limpiamos errores anteriores al iniciar
 
-    // Simular autenticación
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+        const response = await fetch('http://localhost:3000/api/v1/users/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }), // Usamos los estados directamente
+        });
 
-    console.log("Login attempt:", { email, password, rememberMe })
-    setIsLoading(false)
-  }
+        const data = await response.json();
+
+        if (!response.ok) {
+            // Si hay un error, lo tomamos del 'msg' o 'errors' del backend
+            const errorMessage = data.msg || (data.errors && data.errors[0]?.msg) || 'Credenciales inválidas.';
+            throw new Error(errorMessage);
+        }
+
+        // Si el login es exitoso
+        localStorage.setItem('authToken', data.token);
+        window.location.href = '/dashboard';
+
+    } catch (err: any) {
+        // Guardamos el mensaje de error para mostrarlo en la interfaz
+        setError(err.message || "No se pudo conectar con el servidor.");
+    } finally {
+        setIsLoading(false);
+    }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4 relative">

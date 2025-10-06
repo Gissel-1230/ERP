@@ -1,7 +1,3 @@
-// components/auth/Login.tsx
-
-"use client";
-
 import { useState } from "react";
 
 // Tipos para el estado del formulario y los errores, para máxima seguridad de tipos.
@@ -56,17 +52,55 @@ const Login = () => {
     e.preventDefault();
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
+        setErrors(validationErrors);
+        return;
     }
 
     setIsLoading(true);
-    // Simulación de llamada a API
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    console.log("Login attempt:", formData);
-    alert("Login exitoso (Demo)");
-    setIsLoading(false);
-  };
+    setErrors({}); // Limpia errores previos al intentar de nuevo
+
+    try {
+        // 1. Preparamos los datos que se enviarán
+        const loginData = {
+            email: formData.email,
+            password: formData.password
+        };
+
+        // 2. Hacemos la llamada a tu API de back-end
+        const response = await fetch('http://localhost:3000/api/v1/users/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(loginData),
+        });
+
+        const data = await response.json();
+
+        // 3. Manejamos la respuesta del servidor
+        if (!response.ok) {
+            // Si el servidor responde con un error (ej. 401 Credenciales inválidas)
+            // se lanza un error para que lo capture el 'catch'
+            throw new Error(data.msg || 'Ocurrió un error al iniciar sesión.');
+        }
+
+        // 4. Si el login es exitoso
+        console.log('Token recibido:', data.token);
+        // Guardamos el token en el almacenamiento local del navegador para usarlo después
+        localStorage.setItem('authToken', data.token);
+        alert('¡Login exitoso!');
+        
+        // En un futuro, aquí es donde redirigirías al usuario al dashboard
+        // window.location.href = '/dashboard';
+
+    } catch (error: any) {
+        // 5. Si hay un error de red o del servidor, lo mostramos en el formulario
+        setErrors({ password: error.message });
+    } finally {
+        // 6. Esto se ejecuta siempre, al final de la llamada, para detener el spinner
+        setIsLoading(false);
+    }
+};
 
   return (
     <main className="flex min-h-screen w-full items-center justify-center bg-slate-100 p-4">
