@@ -1,31 +1,45 @@
+// components/ventas/AddOrdenModal.tsx
 "use client";
 import { useState, useEffect } from 'react';
-import { addOrden } from '@/lib/ventas-store'; // Cambiamos la forma de guardar
+import type { OrdenDeCompra } from '@/lib/data';
 
+// La prop onAddOrden ahora debe incluir el valorTotal
 interface AddOrdenModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: () => void; // Para refrescar la tabla
+  onAddOrden: (orden: Omit<OrdenDeCompra, 'codigo' | 'fechaCreacion' | 'status'>) => void;
 }
 
-export default function AddOrdenModal({ isOpen, onClose, onAdd }: AddOrdenModalProps) {
+export default function AddOrdenModal({ isOpen, onClose, onAddOrden }: AddOrdenModalProps) {
   const [folio, setFolio] = useState('');
   const [producto, setProducto] = useState('');
   const [cliente, setCliente] = useState('');
   const [cantidad, setCantidad] = useState('');
+  const [valorTotal, setValorTotal] = useState(''); // Nuevo estado
+
+  const resetForm = () => {
+    setFolio(''); setProducto(''); setCliente(''); setCantidad(''); setValorTotal('');
+  };
+
+  useEffect(() => {
+    if (!isOpen) resetForm();
+  }, [isOpen]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!folio || !producto || !cliente || !cantidad) return;
+    if (!folio || !producto || !cliente || !cantidad || !valorTotal) {
+      alert('Por favor, completa todos los campos.');
+      return;
+    }
     
-    addOrden({
+    onAddOrden({
       folio,
       producto,
       cliente,
       cantidad: parseInt(cantidad),
+      valorTotal: parseFloat(valorTotal) // Añadimos el nuevo campo
     });
 
-    onAdd();
     onClose();
   };
   
@@ -36,26 +50,32 @@ export default function AddOrdenModal({ isOpen, onClose, onAdd }: AddOrdenModalP
       <div className="relative w-full max-w-lg rounded-xl bg-white p-6 shadow-xl dark:bg-slate-800" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-xl font-bold text-slate-900 dark:text-white">Nueva Orden de Compra</h2>
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-           {/* -- NUEVO CAMPO FOLIO -- */}
-           <div>
-             <label htmlFor="folio" className="block text-sm font-medium">Folio</label>
-             <input id="folio" type="text" value={folio} onChange={(e) => setFolio(e.target.value)} required className="mt-1 w-full rounded-lg" />
-           </div>
           <div>
-            <label htmlFor="producto" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Nombre del Producto</label>
-            <input id="producto" type="text" value={producto} onChange={(e) => setProducto(e.target.value)} className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200" required />
+            <label htmlFor="folio">Folio</label>
+            <input id="folio" type="text" value={folio} onChange={(e) => setFolio(e.target.value)} required className="mt-1 w-full rounded-lg" />
           </div>
           <div>
-            <label htmlFor="cliente" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Nombre del Cliente</label>
-            <input id="cliente" type="text" value={cliente} onChange={(e) => setCliente(e.target.value)} className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200" required />
+            <label htmlFor="producto">Nombre del Producto</label>
+            <input id="producto" type="text" value={producto} onChange={(e) => setProducto(e.target.value)} required className="mt-1 w-full rounded-lg" />
           </div>
           <div>
-            <label htmlFor="cantidad" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Cantidad (Piezas)</label>
-            <input id="cantidad" type="number" value={cantidad} onChange={(e) => setCantidad(e.target.value)} className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200" required min="1" />
+            <label htmlFor="cliente">Nombre del Cliente</label>
+            <input id="cliente" type="text" value={cliente} onChange={(e) => setCliente(e.target.value)} required className="mt-1 w-full rounded-lg" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="cantidad">Cantidad (Piezas)</label>
+              <input id="cantidad" type="number" value={cantidad} onChange={(e) => setCantidad(e.target.value)} required min="1" className="mt-1 w-full rounded-lg" />
+            </div>
+            {/* -- NUEVO CAMPO VALOR TOTAL -- */}
+            <div>
+              <label htmlFor="valorTotal">Valor Total ($)</label>
+              <input id="valorTotal" type="number" step="0.01" value={valorTotal} onChange={(e) => setValorTotal(e.target.value)} required min="0" className="mt-1 w-full rounded-lg" />
+            </div>
           </div>
           <div className="flex justify-end gap-4 pt-4">
-            <button type="button" onClick={onClose} className="rounded-lg border border-slate-300 bg-transparent px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700">Cancelar</button>
-            <button type="submit" className="rounded-lg border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-indigo-700">Agregar Orden</button>
+            <button type="button" onClick={onClose} className="rounded-lg border px-4 py-2 text-sm font-medium">Cancelar</button>
+            <button type="submit" className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white">Agregar Orden</button>
           </div>
         </form>
       </div>

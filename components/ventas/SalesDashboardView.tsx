@@ -20,29 +20,30 @@ export default function SalesDashboardView() {
   const completedOrdersCount = (orderSummary.find(s => s.status === 'Aceptado')?.count || 0) + 
                                (orderSummary.find(s => s.status === 'En Camino')?.count || 0);
 
-  // highlight-start
-  // Lógica para calcular clientes activos únicos
   const activeClientsCount = new Set(allOrders.map(order => order.cliente)).size;
-  // highlight-end
+
+  const totalSalesValue = allOrders.reduce((total, order) => total + order.valorTotal, 0);
+
+  const currencyFormatter = new Intl.NumberFormat('es-MX', {
+    style: 'currency',
+    currency: 'MXN',
+  });
 
   return (
     <div className="flex flex-col gap-8">
-      {/* SECCIÓN 1: KPIs Principales */}
       <section className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
         <StatCard 
           title="Ventas Totales (Mes)" 
-          value="$45,231.89" 
+          value={currencyFormatter.format(totalSalesValue)} 
           change="+20.1% vs mes anterior" 
           icon={DollarSign} 
         />
-        {/* highlight-start */}
         <StatCard 
           title="Clientes Activos del Mes" 
           value={activeClientsCount.toString()} 
           change="Clientes con órdenes activas" 
           icon={Users} 
         />
-        {/* highlight-end */}
         <StatCard 
           title="Órdenes Activas" 
           value={allOrders.length.toString()} 
@@ -56,8 +57,6 @@ export default function SalesDashboardView() {
           icon={CheckCircle} 
         />
       </section>
-
-      {/* SECCIÓN 2: Resúmenes y Gráfico */}
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-1">
           <OrderStatusSummary summary={orderSummary} />
@@ -66,8 +65,6 @@ export default function SalesDashboardView() {
           <RevenueChart />
         </div>
       </section>
-
-      {/* SECCIÓN 3: Ventas Recientes */}
       <section>
         <RecentSales />
       </section>

@@ -4,11 +4,15 @@ import { getOrdenes } from "@/lib/ventas-store";
 import type { OrdenDeCompra } from "@/lib/data";
 
 export default function RecentSales() {
-  // 1. Obtenemos TODAS las órdenes desde nuestro store central.
   const allOrders = getOrdenes();
-
-  // 2. Seleccionamos solo las más recientes (por ejemplo, las últimas 5) y las invertimos para mostrar la más nueva primero.
   const recentOrders = allOrders.slice(-5).reverse();
+  
+  // highlight-start
+  const currencyFormatter = new Intl.NumberFormat('es-MX', {
+    style: 'currency',
+    currency: 'MXN',
+  });
+  // highlight-end
 
   return (
     <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-slate-800">
@@ -20,7 +24,6 @@ export default function RecentSales() {
         {recentOrders.length > 0 ? (
           recentOrders.map((orden) => (
             <div key={orden.codigo} className="flex items-center gap-4">
-              {/* Contenido Izquierdo: Producto y Folio */}
               <div className="flex-1">
                 <p className="font-semibold text-slate-800 dark:text-slate-200">{orden.producto}</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -30,12 +33,12 @@ export default function RecentSales() {
                   Remisión: {orden.folio}
                 </p>
               </div>
-              {/* Contenido Derecho: Valor (Ejemplo) */}
               <div className="text-right">
+                {/* highlight-start */}
                 <p className="font-semibold text-slate-900 dark:text-white">
-                  {/* 3. Valor de ejemplo para la remisión. En un futuro, este dato vendría del objeto 'orden'. */}
-                  ${(orden.cantidad * (Math.random() * 5 + 10)).toFixed(2)}
+                  {currencyFormatter.format(orden.valorTotal)}
                 </p>
+                {/* highlight-end */}
                 <p className="text-xs text-slate-500">{orden.fechaCreacion}</p>
               </div>
             </div>

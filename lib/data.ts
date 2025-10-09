@@ -3,24 +3,20 @@ export type OrderStatus = 'Pendiente' | 'En proceso de preparar' | 'Aceptado' | 
 
 export interface OrdenDeCompra {
   codigo: string;
-  folio: string; // Nuevo campo
-  fechaCreacion: string; // Nuevo campo
+  folio: string;
+  fechaCreacion: string;
   producto: string;
   cliente: string;
   cantidad: number;
+  valorTotal: number; // Nuevo campo
   status: OrderStatus;
 }
 
 
 export const initialOrdenes: OrdenDeCompra[] = [
-  { codigo: 'OC-2025-001', folio: 'FS-A001', fechaCreacion: '2025-09-15',producto: 'Tornillo 1/4"', cliente: 'Constructora XYZ', cantidad: 5000, status: 'Aceptado' },
-  { codigo: 'OC-2025-002', folio: 'FS-A001', fechaCreacion: '2025-09-15',producto: 'Placa de Acero 2mm', cliente: 'Industrias GAMA', cantidad: 150, status: 'En Camino' },
-  { codigo: 'OC-2025-003', folio: 'FS-A001', fechaCreacion: '2025-09-15',producto: 'Viga de Aluminio', cliente: 'Arquitectura Delta', cantidad: 50, status: 'Pendiente' },
-  { codigo: 'OC-2025-004', folio: 'FS-A001', fechaCreacion: '2025-09-15',producto: 'Aceite Lubricante', cliente: 'Taller Central', cantidad: 20, status: 'En proceso de preparar' },
-  { codigo: 'OC-2025-005', folio: 'FS-A001', fechaCreacion: '2025-09-15',producto: 'Tornillo 1/2"', cliente: 'Constructora XYZ', cantidad: 1000, status: 'Rechazado' },
-  { codigo: 'OC-2025-001', folio: 'FS-A001', fechaCreacion: '2025-09-15', producto: 'Tornillo 1/4"', cliente: 'Constructora XYZ', cantidad: 5000, status: 'Aceptado' },
-  { codigo: 'OC-2025-002', folio: 'FS-A002', fechaCreacion: '2025-09-16', producto: 'Placa de Acero 2mm', cliente: 'Industrias GAMA', cantidad: 150, status: 'En Camino' },
-];
+  { codigo: 'OC-2025-001', folio: 'FS-A001', fechaCreacion: '15/09/2025', producto: 'Tornillo 1/4"', cliente: 'Constructora XYZ', cantidad: 5000, valorTotal: 7500.00, status: 'Aceptado' },
+  { codigo: 'OC-2025-002', folio: 'FS-A002', fechaCreacion: '16/09/2025', producto: 'Placa de Acero 2mm', cliente: 'Industrias GAMA', cantidad: 150, valorTotal: 18000.00, status: 'En Camino' },
+]
 
 
 // --- TIPOS Y DATOS DE ALMACENES ---

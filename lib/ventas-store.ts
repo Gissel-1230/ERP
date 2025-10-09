@@ -1,23 +1,20 @@
 // lib/ventas-store.ts
-
 import { initialOrdenes, type OrdenDeCompra, type OrderStatus } from './data';
 
-let ordenesEnMemoria: OrdenDeCompra[] = [...initialOrdenes];
+let ordenesEnMemoria: OrdenDeCompra[] = JSON.parse(JSON.stringify(initialOrdenes));
 
 export const getOrdenes = (): OrdenDeCompra[] => {
   return ordenesEnMemoria;
 };
 
 
-// Actualizamos la función 'addOrden' para que reciba el folio y genere la fecha
+// Actualizamos la función 'addOrden' para que reciba también el valorTotal
 export const addOrden = (ordenData: Omit<OrdenDeCompra, 'codigo' | 'fechaCreacion' | 'status'>) => {
   const nuevaOrden: OrdenDeCompra = {
     ...ordenData,
     codigo: `OC-${String(Date.now()).slice(-4)}`,
-    // highlight-start
     fechaCreacion: new Date().toLocaleDateString('es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' }),
-    status: 'Pendiente', // Todas las nuevas órdenes inician como Pendiente
-    // highlight-end
+    status: 'Pendiente',
   };
   ordenesEnMemoria.push(nuevaOrden);
 };

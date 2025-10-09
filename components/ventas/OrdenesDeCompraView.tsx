@@ -1,3 +1,4 @@
+// components/ventas/OrdenesDeCompraView.tsx
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -22,8 +23,9 @@ export default function OrdenesDeCompraView() {
     setOrdenes([...getOrdenes()]);
   };
 
-  const handleAddOrden = (nuevaOrden: OrdenDeCompra) => {
-    addOrden(nuevaOrden);
+  // Actualizamos el handler para que coincida con la nueva data del modal
+  const handleAddOrden = (ordenData: Omit<OrdenDeCompra, 'codigo' | 'fechaCreacion' | 'status'>) => {
+    addOrden(ordenData);
     refreshOrdenes();
   };
   
@@ -50,7 +52,7 @@ export default function OrdenesDeCompraView() {
         </div>
       </div>
 
-      <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-slate-800">
+     <div className="rounded-xl border bg-white p-6 shadow-sm dark:bg-slate-800">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold">Listado de Órdenes</h3>
           <button
