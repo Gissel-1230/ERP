@@ -1,4 +1,4 @@
-// File: C:\Users\emari\OneDrive\Documents\GitHub\ERP\app\dashboard\almacenes\page.tsx
+// File: C:\Users\mcsmo\OneDrive\Documentos\DataBridge\frontend\ERP\app\dashboard\almacenes\page.tsx
 import * as entry from '../../../../../app/dashboard/almacenes/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

@@ -1,4 +1,4 @@
-// File: C:\Users\emari\OneDrive\Documents\GitHub\ERP\app\layout.tsx
+// File: C:\Users\mcsmo\OneDrive\Documentos\DataBridge\frontend\ERP\app\layout.tsx
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
