@@ -5,7 +5,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
 import { ThemeProvider } from "@/components/theme-provider"
 import "./globals.css"
-import { AuthProvider } from "@/app/context/AuthContext.js";
+import { AuthProvider } from "@/app/context/AuthContext.tsx";
 
 const geist = Geist({
   subsets: ["latin"],

@@ -45,6 +45,25 @@ export interface Almacen {
   inventarios: Inventario[];
 }
 
+export interface CategoryItem {
+  id: string | number;
+  nombre: string;
+  descripcion: string;
+  product_count: number; // Campo que devuelve tu API
+}
+
+export interface GlobalProduct {
+  product_id: number | string;
+  product_name: string; 
+  description: string;
+  unit_price: number;
+  unit_of_measure: string;
+  minimum_stock: number;
+  category_id: number;
+  categoria_nombre: string; 
+  current_stock_total: number;
+}
+
 export const initialAlmacenes: Almacen[] = [
   { 
     id: 'ALM-001', 

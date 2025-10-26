@@ -10,6 +10,8 @@ import {
   ClipboardList,
   Settings,
   LogOut,
+  Tag,
+  BoxSelect,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -20,6 +22,8 @@ import { useEffect, useState } from "react";
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard", roles: [1, 2, 3] },
   { href: "/dashboard/almacenes", icon: Warehouse, label: "Almacenes", roles: [1, 2] },
+  { href: "/dashboard/categorias", icon: Tag, label: "Categorías", roles: [1, 2] },
+  { href: "/dashboard/productos", icon: BoxSelect, label: "Productos", roles: [1, 2] },
   { href: "/dashboard/traspasos", icon: ArrowRightLeft, label: "Traspasos", roles: [1, 2] },
   { href: "/dashboard/ventas", icon: ShoppingCart, label: "Ventas", roles: [1] },
   { href: "/dashboard/requisicion", icon: ClipboardList, label: "Requisición", roles: [1, 2, 3] },
