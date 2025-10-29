@@ -3,7 +3,7 @@ import { getAuthHeaders } from './almacen-store';
 import { getCategories } from './category-store';
 import { type CategoryItem, type GlobalProduct } from './data';
 
-const API_URL = 'http://localhost:3000/api/v1';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // --- Caché en memoria ---
 let productsCache: GlobalProduct[] = [];

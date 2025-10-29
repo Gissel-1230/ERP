@@ -1,6 +1,6 @@
 // lib/inventory-store.ts
 import { getAuthHeaders } from './almacen-store'; // Utilidad para obtener headers
-const API_URL = 'http://localhost:3000/api/v1';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // Define la estructura de datos que esperamos enviar para un movimiento
 interface MovementData {

@@ -36,13 +36,13 @@ export default function LoginPage() {
     setError(null); // Limpiamos errores anteriores al iniciar
 
     try {
-      const response = await fetch("http://localhost:3000/api/v1/users/login", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/login`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+            "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }), // Usamos los estados directamente
-      });
+    });
 
       const data = await response.json();
 
@@ -73,11 +73,7 @@ export default function LoginPage() {
       localStorage.setItem("user", JSON.stringify(payload));
 
       // Iniciar sesión en contexto
-      login(token, {
-        full_name: payload.full_name,
-        role_id: payload.role_id,
-        email: payload.email
-      });
+      login(token, payload);
     router.push("/dashboard");
     } catch (err: any) {
       // Guardamos el mensaje de error para mostrarlo en la interfaz

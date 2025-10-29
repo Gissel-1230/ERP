@@ -17,7 +17,8 @@ interface AuthContextType {
 interface UserPayload {
     user_id: number; // O string si es UUID
     role_id: number;
-    // Añade otros campos si los tienes en el payload, ej: full_name, email
+    full_name: string; // <-- AÑADIR ESTA LÍNEA
+    email: string;
 }
 
 // Creamos el contexto con un valor inicial undefined o un objeto por defecto

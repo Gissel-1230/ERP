@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 import { type Almacen, type Inventario, type Producto, type CategoryItem } from './data';
 import { getAuthHeaders } from './almacen-store'; 
 
-const API_URL = 'http://localhost:3000/api/v1';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // --- Caché en memoria ---
 let categoriesCache: CategoryItem[] = [];
