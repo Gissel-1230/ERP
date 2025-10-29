@@ -114,36 +114,42 @@ export const initialAlmacenes: Almacen[] = [
 export type TraspasoStatus = 'pendiente' | 'aceptado' | 'rechazado';
 
 export interface Traspaso {
-  id: string;
+    id: string | number; // ID de la solicitud
   serie: string;
-  folio: string;
-  fecha: string;
-  producto_id: string;
-  producto_nombre: string;
-  cantidad: number;
-  almacen_salida_id: string;
-  inventario_salida_id: string;
-  almacen_entrada_id: string;
-  inventario_entrada_id: string;
-  estatus: TraspasoStatus;
-  usuario_responsable: string;
-  observaciones?: string;
-}
-
-export const initialTraspasos: Traspaso[] = [
-  {
-    id: 'TR-001',
-    serie: 'TRB',
-    folio: 'TRB-0001',
-    fecha: new Date().toLocaleString('es-MX'),
-    producto_id: 'PROD-001',
-    producto_nombre: 'Tornillo 1/4"',
-    cantidad: 500,
-    almacen_salida_id: 'ALM-001',
-    inventario_salida_id: 'INV-01',
-    almacen_entrada_id: 'ALM-002',
-    inventario_entrada_id: 'INV-03',
-    estatus: 'aceptado',
-    usuario_responsable: 'Ana López'
+    folio: string;
+    fecha: string;
+    producto_id: string | number;
+    producto_nombre: string;
+    cantidad: number;
+    
+    // IDs (El store los puede enviar, pero la tabla no los usa)
+    almacen_salida_id: string | number;
+    almacen_entrada_id: string | number;
+  
+    // Nombres (Los campos que faltaban)
+    almacen_salida_nombre: string;
+    almacen_entrada_nombre: string;
+    
+    estatus: TraspasoStatus;
+    usuario_responsable: string; // Quién solicitó
+    observaciones?: string;
   }
-];
+
+  export const initialTraspasos: Traspaso[] = [
+      {
+        id: 'TR-001',
+        serie: 'TRB',
+        folio: 'TRB-0001',
+        fecha: new Date().toLocaleString('es-MX'),
+        producto_id: 'PROD-001',
+        producto_nombre: 'Tornillo 1/4"',
+        cantidad: 500,
+        almacen_salida_id: 'ALM-001',
+        almacen_entrada_id: 'ALM-002',
+        // --- 👇 Añadimos los nombres que faltaban a los datos falsos 👇 ---
+        almacen_salida_nombre: 'Almacén Central (Mock)',
+        almacen_entrada_nombre: 'Bodega MP (Mock)',
+        estatus: 'aceptado',
+        usuario_responsable: 'Ana López (Mock)'
+      }
+    ];

@@ -1,78 +1,129 @@
 // lib/traspasos-store.ts
-import { initialTraspasos, type Traspaso, type TraspasoStatus } from './data';
-import { getProductoStock, updateProductoStock, getInventarioById } from './almacen-store';
+import { type Traspaso, type TraspasoStatus } from './data';
+// Importamos los helpers (asumimos que getAuthHeaders está exportado en almacen-store.ts)
+import { getAuthHeaders } from './almacen-store';
+import { type GlobalProduct, type CategoryItem } from './data';
 
-let traspasosEnMemoria: Traspaso[] = JSON.parse(JSON.stringify(initialTraspasos));
+// Usamos la variable de entorno para la URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL; 
 
-const getNextFolio = (): string => {
-  const ultimoFolio = traspasosEnMemoria.length > 0 ? traspasosEnMemoria[traspasosEnMemoria.length - 1].folio : 'TRB-0000';
-  const ultimoNumero = parseInt(ultimoFolio.split('-')[1], 10);
-  return `TRB-${String(ultimoNumero + 1).padStart(4, '0')}`;
-};
-
-export const getTraspasos = (): Traspaso[] => {
-  return traspasosEnMemoria;
-};
-
-interface AddTraspasoData {
-  producto_id: string;
-  producto_nombre: string;
-  cantidad: number;
-  almacen_salida_id: string;
-  inventario_salida_id: string;
-  almacen_entrada_id: string;
-  inventario_entrada_id: string;
-  observaciones?: string;
+// Interfaz para los datos que enviará el modal (simplificada)
+export interface AddTraspasoData {
+    product_id: number;
+    from_warehouse_id: number;
+    to_warehouse_id: number;
+    quantity: number;
 }
 
-export const addTraspaso = (data: AddTraspasoData): { success: boolean, message: string } => {
-  // 1. Validar que origen y destino no sean el mismo
-  if (data.inventario_salida_id === data.inventario_entrada_id) {
-    return { success: false, message: 'El inventario de origen y destino no pueden ser el mismo.' };
-  }
+// --- FUNCIONES ASÍNCRONAS (LLAMADAS A LA API) ---
 
-  // 2. Validar existencias
-  const stockDisponible = getProductoStock(data.inventario_salida_id, data.producto_id);
-  if (data.cantidad > stockDisponible) {
-    return { success: false, message: `Stock insuficiente. Disponible: ${stockDisponible}` };
-  }
+/**
+ * [READ] Obtiene la lista de todas las solicitudes de traspaso.
+ */
+export const getTraspasos = async (token: string | null): Promise<Traspaso[]> => {
+    console.log("[TraspasosStore] Llamando a GET /api/v1/transfers...");
+    if (!token) throw new Error("Token no proporcionado.");
+    
+    try {
+        const response = await fetch(`${API_URL}/transfers`, {
+            method: 'GET',
+            headers: getAuthHeaders(token)
+        });
 
-  // 3. Crear el registro
-  const nuevoTraspaso: Traspaso = {
-    ...data,
-    id: `TR-${String(Date.now()).slice(-4)}`,
-    serie: 'TRB',
-    folio: getNextFolio(),
-    fecha: new Date().toLocaleString('es-MX'),
-    estatus: 'pendiente',
-    usuario_responsable: 'Ana López (Mock)', // Simulado, se obtendría del AuthContext
-  };
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.msg || `Error ${response.status}`);
+        }
+        
+        const data = await response.json();
 
-  traspasosEnMemoria.push(nuevoTraspaso);
-  return { success: true, message: 'Traspaso creado con éxito.' };
+        // Mapeo de la respuesta de la API a la interfaz 'Traspaso' del front-end
+        const transformedData: Traspaso[] = data.transfers.map((tr: any) => ({
+            id: tr.request_id, // ID de la solicitud
+            folio: `TR-${String(tr.request_id).padStart(4, '0')}`,
+            producto_nombre: tr.product_name,
+            cantidad: tr.quantity,
+            almacen_salida_nombre: tr.from_warehouse,
+            almacen_entrada_nombre: tr.to_warehouse,
+            fecha: new Date(tr.request_date).toLocaleString('es-MX'),
+            // 🟢 CORRECCIÓN: NORMALIZAR EL ESTATUS A MINÚSCULAS
+            estatus: String(tr.status).toLowerCase() as TraspasoStatus, 
+            usuario_responsable: tr.requester_name,
+            
+            // IDs
+            producto_id: tr.product_id,
+            almacen_salida_id: tr.from_warehouse_id,
+            almacen_entrada_id: tr.to_warehouse_id,
+        }));
+        
+        return transformedData;
+
+    } catch (error) {
+        console.error("[TraspasosStore] Error al obtener traspasos:", error);
+        throw error;
+    }
 };
 
-export const updateTraspasoStatus = (id: string, newStatus: TraspasoStatus) => {
-  const traspaso = traspasosEnMemoria.find(t => t.id === id);
-  if (!traspaso) return;
+/**
+ * [CREATE] Envía una solicitud de traspaso (POST /transfers/request).
+ */
+export const requestTraspaso = async (data: AddTraspasoData, token: string | null): Promise<any> => {
+    if (!token) throw new Error("Token no proporcionado.");
 
-  // Si se acepta, se ejecuta el movimiento de stock
-  if (newStatus === 'aceptado' && traspaso.estatus === 'pendiente') {
-    const stockSalida = getProductoStock(traspaso.inventario_salida_id, traspaso.producto_id);
-    const stockEntrada = getProductoStock(traspaso.inventario_entrada_id, traspaso.producto_id);
-    
-    // Validar stock de nuevo por si acaso
-    if (traspaso.cantidad > stockSalida) {
-      alert(`Error: Stock insuficiente en origen al momento de aceptar.`);
-      return;
+    try {
+        const response = await fetch(`${API_URL}/transfers/request`, {
+            method: 'POST',
+            headers: getAuthHeaders(token),
+            body: JSON.stringify(data)
+        });
+
+        const responseData = await response.json();
+        
+        if (!response.ok) {
+            // Captura el error de "Stock insuficiente" (409) o validaciones (400)
+            throw new Error(responseData.msg || `Error ${response.status}`);
+        }
+        
+        return responseData; 
+
+    } catch (error) {
+        console.error("[TraspasosStore] Error al solicitar traspaso:", error);
+        throw error;
     }
-    
-    // Actualizar ambos inventarios
-    updateProductoStock(traspaso.inventario_salida_id, traspaso.producto_id, stockSalida - traspaso.cantidad);
-    updateProductoStock(traspaso.inventario_entrada_id, traspaso.producto_id, stockEntrada + traspaso.cantidad);
-  }
-  
-  // Si se rechaza (y estaba pendiente), no se hace nada al stock, solo se actualiza el estatus.
+};
 
-  traspaso.estatus = newStatus;
+/**
+ * [UPDATE] Aprueba o Rechaza una solicitud (POST /transfers/approve/:id o /reject/:id).
+ */
+export const updateTraspasoStatus = async (
+    id: string | number, // ID de la solicitud (request_id)
+    newStatus: 'APPROVED' | 'REJECTED', // Estatus en Mayúsculas para la API
+    token: string | null
+): Promise<any> => {
+    if (!token) throw new Error("Token no proporcionado.");
+    
+    // Determinamos la ruta de la API (Aprobar o Rechazar)
+    const action = newStatus === 'APPROVED' ? 'approve' : 'reject';
+    const url = `${API_URL}/transfers/${action}/${id}`;
+    console.log(`[TraspasosStore] Llamando a ${action} API: ${url}`);
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: getAuthHeaders(token)
+        });
+        
+        const responseData = await response.json();
+
+        if (!response.ok) {
+            // Captura el error (ej. "Stock insuficiente" al aprobar, o "ya procesada")
+            throw new Error(responseData.msg || `Error ${response.status}`);
+        }
+        
+        return responseData; 
+
+    } catch (error) {
+        console.error(`[TraspasosStore] Error al ${action} traspaso:`, error);
+        throw error;
+    }
 };
