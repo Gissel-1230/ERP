@@ -20,17 +20,16 @@ const EstatusIcon = ({ estatus }: { estatus: TraspasoStatus }) => {
 interface TraspasosTableProps {
   traspasos: Traspaso[];
   onUpdateStatus: (id: string, status: TraspasoStatus) => void;
+  onDownloadKardex: (id: string | number, folio: string) => void; // <-- NUEVA PROP
   currentUserRole?: number; // Rol del usuario actual (para permisos)
 }
 
 export default function TraspasosTable({ 
     traspasos, 
     onUpdateStatus,
+    onDownloadKardex, // <-- Aceptar la nueva prop
     currentUserRole 
 }: TraspasosTableProps) {
-  
-  // Puedes dejar el console.log aquí si sigues debuggeando
-  // console.log("Rol actual en TraspasosTable:", currentUserRole);
   
   return (
     <div className="overflow-x-auto rounded-xl border bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
@@ -72,14 +71,23 @@ export default function TraspasosTable({
               <td className="px-6 py-4">
                 <div className="flex gap-2">
                   
-                  {/* --- LÓGICA DE PERMISOS: BUSCA 'pending' (el valor real en minúsculas) --- */}
+                  {/* Lógica de Aprobación/Rechazo (Solo para Role 1 y Estatus Pending) */}
                   {String(tr.estatus).toLowerCase() === 'pending' && currentUserRole === 1 && (
                     <>
                       <button onClick={() => onUpdateStatus(String(tr.id), 'aceptado')} className="text-green-500" title="Aceptar"><Check className="h-4 w-4" /></button>
                       <button onClick={() => onUpdateStatus(String(tr.id), 'rechazado')} className="text-red-500" title="Rechazar"><X className="h-4 w-4" /></button>
                     </>
                   )}
-                  <button className="text-slate-500" title="Descargar PDF"><Download className="h-4 w-4" /></button>
+                  
+                  {/* --- BOTÓN VER KARDEX (AUDITORÍA) --- */}
+                  <button 
+                    onClick={() => onDownloadKardex(tr.id, tr.folio)} // <-- Usar la nueva prop
+                    className="text-slate-500 hover:text-slate-700" 
+                    title="Ver Kardex"
+                  >
+                    <Download className="h-4 w-4" />
+                  </button>
+                  
                 </div>
               </td>
             </tr>
