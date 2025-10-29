@@ -1,7 +1,7 @@
 // lib/almacen-store.ts
 import Cookies from 'js-cookie';
 import { initialAlmacenes, type Almacen, type Inventario, type Producto } from './data';
-const API_URL = 'http://localhost:3001/api/v1';
+const API_URL = 'http://localhost:3000/api/v1';
 
 /**
  * Función helper para crear los encabezados (Recibe el token).
@@ -42,7 +42,6 @@ export const getAlmacenes = async (token: string | null): Promise<Almacen[]> => 
     // data viene con IDs numéricos del backend
     const data: any[] = await response.json(); // Usamos 'any' temporalmente para la transformación
 
-    // --- 👇 TRANSFORMACIÓN MEJORADA 👇 ---
     // Mapeamos los datos y AÑADIMOS PREFIJOS SOLO SI NO EXISTEN
     const transformedData = data.map((almacen): Almacen => { // Especificamos el tipo de retorno Almacen
       // Verifica si el ID ya es string y tiene prefijo, si no, lo añade
@@ -73,10 +72,9 @@ export const getAlmacenes = async (token: string | null): Promise<Almacen[]> => 
                 nombre: prod.nombre || '',
                 cantidad: prod.cantidad || 0,
                 precioUnitario: prod.precioUnitario || 0,
-                // Asegúrate que los campos peso y unidadPeso existan o usa valores por defecto
                 peso: prod.peso || 0, // Ajusta si 'peso' significa moneda
-                unidadPeso: prod.unidadPeso || 'kg', // Ajusta si es necesario
-                observaciones: prod.observaciones || undefined
+                unidadPeso: prod.unit_of_measure, // <-- Mapea 'unit_of_measure' a 'unidadPeso'
+                description: prod.product_description || ''
               };
             })
           };
@@ -111,7 +109,6 @@ export const saveAlmacen = async (
   let url = `${API_URL}/warehouses`; // URL por defecto (POST para crear)
   const method = isEditMode ? 'PUT' : 'POST';
 
-  // --- CORRECCIÓN DEL ID PARA LA URL DE EDICIÓN (PUT) ---
   if (isEditMode && id) {
       // Extraemos solo el número del ID (ej: 'ALM-3' -> '3')
       const numericId = id.split('-')[1];

@@ -27,7 +27,7 @@ export interface Producto {
   precioUnitario: number;
   peso: number;
   unidadPeso: 'g' | 'kg';
-  observaciones?: string; // Nuevo campo opcional
+  description: string; // Nuevo campo opcional
 }
 
 export interface Inventario {
@@ -65,48 +65,51 @@ export interface GlobalProduct {
 }
 
 export const initialAlmacenes: Almacen[] = [
-  { 
-    id: 'ALM-001', 
-    nombre: 'Almacén Central', 
-    ubicacion: 'Nave Principal, Sector A', 
-    descripcion: 'Almacén de productos de alta rotación.',
-    inventarios: [
-      { 
-        id: 'INV-01', 
-        nombre: 'Tornillería', 
-        descripcion: 'Tornillos y tuercas de varias medidas',
-        productos: [
-          { id: 'PROD-001', nombre: 'Tornillo 1/4"', cantidad: 8500, precioUnitario: 1.5, peso: 5, unidadPeso: 'g' },
-          { id: 'PROD-004', nombre: 'Tuerca 1/4"', cantidad: 8500, precioUnitario: 0.5, peso: 2, unidadPeso: 'g' },
-        ]
-      },
-      {
-        id: 'INV-02',
-        nombre: 'Placas Metálicas',
-        descripcion: 'Placas de acero y aluminio',
-        productos: [
-          { id: 'PROD-002', nombre: 'Placa de Acero', cantidad: 300, precioUnitario: 120, peso: 2.5, unidadPeso: 'kg' },
-        ]
-      }
-    ]
-  },
-  { 
-    id: 'ALM-002', 
-    nombre: 'Bodega de Materia Prima', 
-    ubicacion: 'Edificio B, Planta Baja', 
-    descripcion: 'Materiales para producción.',
-    inventarios: [
-      { 
-        id: 'INV-03', 
-        nombre: 'Materia Prima Pesada', 
-        descripcion: 'Rollos de metal y otros materiales base.',
-        productos: [
-          { id: 'PROD-003', nombre: 'Rollo de Aluminio', cantidad: 50, precioUnitario: 3200, peso: 15, unidadPeso: 'kg' },
-        ]
-      },
-    ]
-  },
-];
+    { 
+      id: 'ALM-001', 
+      nombre: 'Almacén Central', 
+      ubicacion: 'Nave Principal, Sector A', 
+      descripcion: 'Almacén de productos de alta rotación.',
+      inventarios: [
+        { 
+          id: 'INV-01', 
+          nombre: 'Tornillería', 
+          descripcion: 'Tornillos y tuercas de varias medidas',
+          productos: [
+            // --- CAMBIOS AQUÍ ---
+            { id: 'PROD-001', nombre: 'Tornillo 1/4"', cantidad: 8500, precioUnitario: 1.5, peso: 5, unidadPeso: 'g', description: 'Tornillo de acero estándar para metal.' },
+            { id: 'PROD-004', nombre: 'Tuerca 1/4"', cantidad: 8500, precioUnitario: 0.5, peso: 2, unidadPeso: 'g', description: 'Tuerca hexagonal de acero para tornillo 1/4".' },
+          ]
+        },
+        {
+          id: 'INV-02',
+          nombre: 'Placas Metálicas',
+          descripcion: 'Placas de acero y aluminio',
+          productos: [
+            // --- CAMBIOS AQUÍ ---
+            { id: 'PROD-002', nombre: 'Placa de Acero', cantidad: 300, precioUnitario: 120, peso: 2.5, unidadPeso: 'kg', description: 'Placa de 2mm de espesor, 1m x 1m.' },
+          ]
+        }
+      ]
+    },
+    { 
+      id: 'ALM-002', 
+      nombre: 'Bodega de Materia Prima', 
+      ubicacion: 'Edificio B, Planta Baja', 
+      descripcion: 'Materiales para producción.',
+      inventarios: [
+        { 
+          id: 'INV-03', 
+          nombre: 'Materia Prima Pesada', 
+          descripcion: 'Rollos de metal y otros materiales base.',
+          productos: [
+            // --- CAMBIOS AQUÍ ---
+            { id: 'PROD-003', nombre: 'Rollo de Aluminio', cantidad: 50, precioUnitario: 3200, peso: 15, unidadPeso: 'kg', description: 'Rollo de aluminio 15kg para corte.' },
+          ]
+        },
+      ]
+    },
+  ];
 
 export type TraspasoStatus = 'pendiente' | 'aceptado' | 'rechazado';
 

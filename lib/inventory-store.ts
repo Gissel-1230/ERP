@@ -8,7 +8,7 @@ interface MovementData {
     warehouse_id: number; 
     quantity: number; 
     description: string; 
-    movement_type: 'IN' | 'OUT'; // O cualquier tipo que definas
+    movement_type: 'IN' | 'OUT' | 'ADJUST-IN' | 'ADJUST-OUT';
 }
 
 // Define la estructura de datos que esperamos recibir de la API
