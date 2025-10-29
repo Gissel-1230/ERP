@@ -16,7 +16,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Eye, EyeOff, Database, Loader2, Router } from "lucide-react";
-import { useAuth } from "@/app/context/AuthContext.js";
+import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 
 

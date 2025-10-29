@@ -1,8 +1,7 @@
 // lib/almacen-store.ts
 import Cookies from 'js-cookie';
-import { type Almacen, type Inventario, type Producto } from './data'; // Ajusta la ruta si es necesario
-
-const API_URL = 'http://localhost:3000/api/v1';
+import { initialAlmacenes, type Almacen, type Inventario, type Producto } from './data';
+const API_URL = 'http://localhost:3001/api/v1';
 
 /**
  * Función helper para crear los encabezados (Recibe el token).
@@ -20,8 +19,7 @@ export const getAuthHeaders = (token: string | null): Record<string, string> => 
 };
 
 // --- Caché en memoria ---
-let almacenesEnMemoria: Almacen[] = [];
-
+let almacenesEnMemoria: Almacen[] = JSON.parse(JSON.stringify(initialAlmacenes));
 /**
  * Lee todos los almacenes de la API (Recibe el token).
  */
@@ -329,4 +327,29 @@ export const deleteProductoFromInventario = (almacenId: string, inventarioId: st
     inventario.productos = inventario.productos.filter(p => p.id !== productoId);
   }
   // PRÓXIMO PASO: DELETE a /api/v1/products/:numericId o afectar /api/v1/inventory
+};
+
+// --- NUEVAS FUNCIONES PARA GESTIÓN DE STOCK (REQUERIDAS POR TRASPASOS) ---
+
+/**
+ * Obtiene el stock de un producto específico en un inventario.
+ */
+export const getProductoStock = (inventarioId: string, productoId: string): number => {
+  const almacen = almacenesEnMemoria.find(a => a.inventarios.some(i => i.id === inventarioId));
+  const inventario = almacen?.inventarios.find(i => i.id === inventarioId);
+  const producto = inventario?.productos.find(p => p.id === productoId);
+  return producto?.cantidad || 0;
+};
+
+/**
+ * Actualiza el stock de un producto específico.
+ */
+export const updateProductoStock = (inventarioId: string, productoId: string, nuevaCantidad: number) => {
+  const almacen = almacenesEnMemoria.find(a => a.inventarios.some(i => i.id === inventarioId));
+  const inventario = almacen?.inventarios.find(i => i.id === inventarioId);
+  if (inventario) {
+    inventario.productos = inventario.productos.map(p =>
+      p.id === productoId ? { ...p, cantidad: nuevaCantidad } : p
+    );
+  }
 };
