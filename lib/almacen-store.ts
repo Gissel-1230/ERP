@@ -1,7 +1,7 @@
 // lib/almacen-store.ts
 import Cookies from 'js-cookie';
 import { initialAlmacenes, type Almacen, type Inventario, type Producto } from './data';
-const API_URL = 'http://localhost:3001/api/v1';
+const API_URL = 'http://localhost:3000/api/v1';
 
 /**
  * Función helper para crear los encabezados (Recibe el token).
