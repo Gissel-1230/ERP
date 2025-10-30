@@ -14,8 +14,6 @@ import { getProducts, saveProduct, deleteProduct } from '@/lib/product-store';
 import { GlobalProduct } from '@/lib/data'; 
 import { getCategories } from '@/lib/category-store';
 import { type CategoryItem } from '@/lib/data'; // Tipo de categoría
-import { showAlert } from '@/components/common/sweetAlert'; // Ajusta la ruta si es necesario
-
 
 export default function ProductosPage() {
     const { token } = useAuth();
@@ -82,46 +80,35 @@ export default function ProductosPage() {
         }
     };
 
-    // 3. FUNCIÓN PARA ELIMINAR (DELETE) CON SWEETALERT2
-  const handleDeleteProduct = async (id: string | number) => {
-    const productToDelete = products.find(p => p.product_id === id);
-    if (!productToDelete) return;
+    // --- 3. FUNCIÓN PARA ELIMINAR (DELETE) ---
+    const handleDeleteProduct = async (id: string | number) => {
+        const productToDelete = products.find(p => p.product_id === id);
+        
+        if (!productToDelete) return;
 
-    // Confirmación SweetAlert2
-    const result = await showAlert({
-      title: '¿Eliminar producto?',
-      text: `¿Estás seguro de eliminar el producto: ${productToDelete.product_name}? Esta acción no se puede deshacer.`,
-      icon: 'warning',
-      confirmButtonText: 'Sí, eliminar',
-      confirmButtonColor: '#d32f2f', // Rojo
-      showCancelButton: true,
-      cancelButtonText: 'Cancelar',
-      cancelButtonColor: '#3085d6',
-    });
-
-    if (!result.isConfirmed) {
-      return;
-    }
-
-    setIsDeleting(String(id));
-
-    try {
-      if (!token) throw new Error("Token no proporcionado.");
-      await deleteProduct(String(id), token);
-      setProducts(prev => prev.filter(p => p.product_id !== id));
-    } catch (err: any) {
-      console.error("Error al eliminar producto:", err);
-      await showAlert({
-        title: 'Error',
-        text: err.message,
-        icon: 'error',
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#d32f2f',
-      });
-    } finally {
-      setIsDeleting(null);
-    }
-  };
+        if (!window.confirm(`¿Estás seguro de eliminar el producto: ${productToDelete.product_name}?`)) {
+            return;
+        }
+        
+        setIsDeleting(String(id));
+        
+        try {
+            if (!token) throw new Error("Token no proporcionado.");
+            
+            await deleteProduct(String(id), token); 
+            
+            // Si es exitoso, actualizamos el estado local (la caché del store se actualiza internamente)
+            setProducts(prev => prev.filter(p => p.product_id !== id));
+            
+        } catch (err: any) {
+            console.error("Error al eliminar producto:", err);
+            // El store ya devuelve el mensaje 409 si tiene stock
+            alert(err.message); 
+            
+        } finally {
+            setIsDeleting(null); 
+        }
+    };
     
     // --- Carga Inicial ---
     useEffect(() => {

@@ -187,17 +187,8 @@ export default function TraspasosPage() {
     if (!token) return;
     try {
       await exportMonthlyKardex(year, month, token);
-      await showAlert({
-        title: "¡Descargado!",
-        text: "Reporte mensual descargado exitosamente.",
-        icon: "success",
-      });
+     
     } catch (error: any) {
-      await showAlert({
-        title: "Error",
-        text: error.message,
-        icon: "error",
-      });
       throw error; // Re-lanzar para que el modal lo maneje
     }
   };

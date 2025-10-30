@@ -168,17 +168,12 @@ export default function TraspasosPage() {
     await fetchTraspasos();
   };
 
- const handleExportExcel = async (id: string | number, folio: string) => {
+  const handleExportExcel = async (id: string | number, folio: string) => {
     if (!token) return;
     try {
       await exportTraspasoToExcel(id, folio, token);
     } catch (error: any) {
-      await showAlert({
-        title: "Error",
-        text: `Error al descargar Excel: ${error.message}`,
-        icon: "error",
-        confirmButtonColor: "#d32f2f",
-      });
+      alert(`Error al descargar Excel: ${error.message}`);
     }
   };
 
@@ -187,17 +182,8 @@ export default function TraspasosPage() {
     if (!token) return;
     try {
       await exportMonthlyKardex(year, month, token);
-      await showAlert({
-        title: "¡Descargado!",
-        text: "Reporte mensual descargado exitosamente.",
-        icon: "success",
-      });
+      alert("Reporte mensual descargado exitosamente.");
     } catch (error: any) {
-      await showAlert({
-        title: "Error",
-        text: error.message,
-        icon: "error",
-      });
       throw error; // Re-lanzar para que el modal lo maneje
     }
   };

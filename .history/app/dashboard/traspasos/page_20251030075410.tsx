@@ -34,8 +34,7 @@ import MonthlyKardexModal from "@/components/traspasos/MonthlyKardexModal"; // N
 import { Button } from "@/components/ui/button";
 import { Plus, Loader2, Calendar } from "lucide-react"; // Agregado Calendar
 import { Skeleton } from "@/components/ui/skeleton";
-import { showAlert } from "@/components/common/sweetAlert";
-
+import Swal from "sweetalert2";
 
 export default function TraspasosPage() {
   const { user, token, isLoading: isLoadingAuth } = useAuth();
@@ -94,16 +93,16 @@ export default function TraspasosPage() {
   const handleRequestTraspaso = async (data: AddTraspasoData) => {
     if (!token) throw new Error("No autenticado");
     await requestTraspaso(data, token);
-    await showAlert({
-      title: "¡Solicitud enviada!",
-      text: "Solicitud de traspaso enviada exitosamente.",
+    //alert("Solicitud de traspaso enviada exitosamente.");
+    Swal.fire({
+      title: "Solicitud de traspaso enviada exitosamente.",
       icon: "success",
+      draggable: true,
     });
     setIsAddModalOpen(false);
     await fetchTraspasos();
   };
 
-  // SWEETALERT2 EN APROBAR/RECHAZAR TRASPASO
   const handleUpdateStatus = async (
     id: string | number,
     status: "APPROVED" | "REJECTED"
@@ -113,35 +112,17 @@ export default function TraspasosPage() {
       status === "APPROVED"
         ? "¿Aprobar este traspaso?"
         : "¿Rechazar este traspaso?";
-    const result = await showAlert({
-      title: status === "APPROVED" ? "Aprobar traspaso" : "Rechazar traspaso",
-      text: confirmMsg,
-      icon: "question",
-      confirmButtonText: status === "APPROVED" ? "Aprobar" : "Rechazar",
-      confirmButtonColor: status === "APPROVED" ? "#1db954" : "#d32f2f",
-      showCancelButton: true,
-      cancelButtonText: "Cancelar",
-      cancelButtonColor: "#3085d6",
-    });
-    if (!result.isConfirmed) return;
+    if (!window.confirm(confirmMsg)) return;
 
     try {
       await updateTraspasoStatus(id, status, token);
-      await showAlert({
-        title: "¡Éxito!",
-        text: `Traspaso ${status === "APPROVED" ? "aprobado" : "rechazado"}.`,
-        icon: "success",
-      });
+      alert(`Traspaso ${status === "APPROVED" ? "aprobado" : "rechazado"}.`);
       await fetchTraspasos();
     } catch (err: any) {
-      await showAlert({
-        title: "Error",
-        text: `Error al procesar traspaso: ${err.message}`,
-        icon: "error",
-        confirmButtonColor: "#d32f2f",
-      });
+      alert(`Error al procesar traspaso: ${err.message}`);
     }
   };
+
   const handleOpenKardex = async (id: string | number, folio: string) => {
     if (!token) return;
     setKardexFolio(folio);
@@ -168,17 +149,12 @@ export default function TraspasosPage() {
     await fetchTraspasos();
   };
 
- const handleExportExcel = async (id: string | number, folio: string) => {
+  const handleExportExcel = async (id: string | number, folio: string) => {
     if (!token) return;
     try {
       await exportTraspasoToExcel(id, folio, token);
     } catch (error: any) {
-      await showAlert({
-        title: "Error",
-        text: `Error al descargar Excel: ${error.message}`,
-        icon: "error",
-        confirmButtonColor: "#d32f2f",
-      });
+      alert(`Error al descargar Excel: ${error.message}`);
     }
   };
 
@@ -187,17 +163,8 @@ export default function TraspasosPage() {
     if (!token) return;
     try {
       await exportMonthlyKardex(year, month, token);
-      await showAlert({
-        title: "¡Descargado!",
-        text: "Reporte mensual descargado exitosamente.",
-        icon: "success",
-      });
+      alert("Reporte mensual descargado exitosamente.");
     } catch (error: any) {
-      await showAlert({
-        title: "Error",
-        text: error.message,
-        icon: "error",
-      });
       throw error; // Re-lanzar para que el modal lo maneje
     }
   };
