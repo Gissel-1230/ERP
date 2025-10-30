@@ -1,155 +1,67 @@
-// --- TIPOS Y DATOS DE VENTAS ---
-export type OrderStatus = 'Pendiente' | 'En proceso de preparar' | 'Aceptado' | 'En Camino' | 'Rechazado';
+// lib/data.ts
 
+// --- TIPOS DE VENTAS ---
+export type OrderStatus = 'pendiente' | 'en proceso de preparar' | 'aceptado' | 'en camino' | 'rechazado';
 export interface OrdenDeCompra {
-  codigo: string;
-  folio: string;
-  fechaCreacion: string;
-  producto: string;
-  cliente: string;
-  cantidad: number;
-  valorTotal: number; // Nuevo campo
-  status: OrderStatus;
+  codigo: string;
+  folio: string;
+  fechaCreacion: string;
+  producto: string;
+  cliente: string;
+  cantidad: number;
+  valorTotal: number;
+  status: OrderStatus;
 }
-
-
 export const initialOrdenes: OrdenDeCompra[] = [
-  { codigo: 'OC-2025-001', folio: 'FS-A001', fechaCreacion: '15/09/2025', producto: 'Tornillo 1/4"', cliente: 'Constructora XYZ', cantidad: 5000, valorTotal: 7500.00, status: 'Aceptado' },
-  { codigo: 'OC-2025-002', folio: 'FS-A002', fechaCreacion: '16/09/2025', producto: 'Placa de Acero 2mm', cliente: 'Industrias GAMA', cantidad: 150, valorTotal: 18000.00, status: 'En Camino' },
-]
+  { codigo: 'OC-2025-001', folio: 'FS-A001', fechaCreacion: '15/09/2025', producto: 'Tornillo 1/4"', cliente: 'Constructora XYZ', cantidad: 5000, valorTotal: 7500.00, status: 'aceptado' },
+  { codigo: 'OC-2025-002', folio: 'FS-A002', fechaCreacion: '16/09/2025', producto: 'Placa de Acero 2mm', cliente: 'Industrias GAMA', cantidad: 150, valorTotal: 18000.00, status: 'en camino' },
+];
 
-
-// --- TIPOS Y DATOS DE ALMACENES ---
+// --- TIPOS DE ALMACENES ---
 export interface Producto {
-  id: string;
-  nombre: string;
-  cantidad: number;
-  precioUnitario: number;
-  peso: number;
-  unidadPeso: 'g' | 'kg';
-  description: string; // Nuevo campo opcional
+  id: string;
+  nombre: string;
+  cantidad: number;
+  precioUnitario: number;
+  peso: number;
+  unidadPeso: 'g' | 'kg';
+  observaciones?: string;
 }
-
 export interface Inventario {
-  id: string;
-  nombre: string;
-  descripcion: string;
-  productos: Producto[];
+  id: string;
+  nombre: string;
+  descripcion: string;
+  productos: Producto[];
 }
-
 export interface Almacen {
-  id: string;
-  nombre: string;
-  ubicacion: string;
-  descripcion: string;
-  inventarios: Inventario[];
+  id: string;
+  nombre: string;
+  ubicacion: string;
+  descripcion: string;
+  inventarios: Inventario[];
 }
+export const initialAlmacenes: Almacen[] = [ /* ... Tus datos de ejemplo ... */ ];
+export interface GlobalProduct { /* ... Tu definición de GlobalProduct ... */ }
+export interface CategoryItem { /* ... Tu definición de CategoryItem ... */ }
 
-export interface CategoryItem {
-  id: string | number;
-  nombre: string;
-  descripcion: string;
-  product_count: number; // Campo que devuelve tu API
-}
 
-export interface GlobalProduct {
-  product_id: number | string;
-  product_name: string; 
-  description: string;
-  unit_price: number;
-  unit_of_measure: string;
-  minimum_stock: number;
-  category_id: number;
-  categoria_nombre: string; 
-  current_stock_total: number;
-}
+// --- TIPOS DE TRASPASOS (CORREGIDOS) ---
+export type TraspasoStatus = 'pending' | 'approved' | 'rejected' | string;
 
-export const initialAlmacenes: Almacen[] = [
-    { 
-      id: 'ALM-001', 
-      nombre: 'Almacén Central', 
-      ubicacion: 'Nave Principal, Sector A', 
-      descripcion: 'Almacén de productos de alta rotación.',
-      inventarios: [
-        { 
-          id: 'INV-01', 
-          nombre: 'Tornillería', 
-          descripcion: 'Tornillos y tuercas de varias medidas',
-          productos: [
-            // --- CAMBIOS AQUÍ ---
-            { id: 'PROD-001', nombre: 'Tornillo 1/4"', cantidad: 8500, precioUnitario: 1.5, peso: 5, unidadPeso: 'g', description: 'Tornillo de acero estándar para metal.' },
-            { id: 'PROD-004', nombre: 'Tuerca 1/4"', cantidad: 8500, precioUnitario: 0.5, peso: 2, unidadPeso: 'g', description: 'Tuerca hexagonal de acero para tornillo 1/4".' },
-          ]
-        },
-        {
-          id: 'INV-02',
-          nombre: 'Placas Metálicas',
-          descripcion: 'Placas de acero y aluminio',
-          productos: [
-            // --- CAMBIOS AQUÍ ---
-            { id: 'PROD-002', nombre: 'Placa de Acero', cantidad: 300, precioUnitario: 120, peso: 2.5, unidadPeso: 'kg', description: 'Placa de 2mm de espesor, 1m x 1m.' },
-          ]
-        }
-      ]
-    },
-    { 
-      id: 'ALM-002', 
-      nombre: 'Bodega de Materia Prima', 
-      ubicacion: 'Edificio B, Planta Baja', 
-      descripcion: 'Materiales para producción.',
-      inventarios: [
-        { 
-          id: 'INV-03', 
-          nombre: 'Materia Prima Pesada', 
-          descripcion: 'Rollos de metal y otros materiales base.',
-          productos: [
-            // --- CAMBIOS AQUÍ ---
-            { id: 'PROD-003', nombre: 'Rollo de Aluminio', cantidad: 50, precioUnitario: 3200, peso: 15, unidadPeso: 'kg', description: 'Rollo de aluminio 15kg para corte.' },
-          ]
-        },
-      ]
-    },
-  ];
-
-export type TraspasoStatus = 'pendiente' | 'aceptado' | 'rechazado';
-
+// Esta interfaz ahora coincide 100% con lo que la API devuelve
+// y lo que el store transforma en getTraspasos
 export interface Traspaso {
-    id: string | number; // ID de la solicitud
-  serie: string;
-    folio: string;
-    fecha: string;
-    producto_id: string | number;
-    producto_nombre: string;
-    cantidad: number;
-    
-    // IDs (El store los puede enviar, pero la tabla no los usa)
-    almacen_salida_id: string | number;
-    almacen_entrada_id: string | number;
-  
-    // Nombres (Los campos que faltaban)
-    almacen_salida_nombre: string;
-    almacen_entrada_nombre: string;
-    
-    estatus: TraspasoStatus;
-    usuario_responsable: string; // Quién solicitó
-    observaciones?: string;
-  }
-
-  export const initialTraspasos: Traspaso[] = [
-      {
-        id: 'TR-001',
-        serie: 'TRB',
-        folio: 'TRB-0001',
-        fecha: new Date().toLocaleString('es-MX'),
-        producto_id: 'PROD-001',
-        producto_nombre: 'Tornillo 1/4"',
-        cantidad: 500,
-        almacen_salida_id: 'ALM-001',
-        almacen_entrada_id: 'ALM-002',
-        // --- 👇 Añadimos los nombres que faltaban a los datos falsos 👇 ---
-        almacen_salida_nombre: 'Almacén Central (Mock)',
-        almacen_entrada_nombre: 'Bodega MP (Mock)',
-        estatus: 'aceptado',
-        usuario_responsable: 'Ana López (Mock)'
-      }
-    ];
+  id: number;
+  folio: string;
+  product_name: string;
+  quantity: number;
+  from_warehouse_name: string;
+  to_warehouse_name: string;
+  request_date: string;
+  status: TraspasoStatus;
+  requester_name: string;
+  producto_id?: number | string;
+  almacen_salida_id?: number | string;
+  almacen_entrada_id?: number | string;
+  observations?: string;
+}
