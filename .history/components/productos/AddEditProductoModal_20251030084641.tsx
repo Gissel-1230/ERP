@@ -83,10 +83,8 @@ export default function AddEditProductoModal({
       //alert("Debes seleccionar una categoría.");
       showAlert({
         title: "¡Oh no, algo no salió bien!",
-        text: "Debes seleccionar una categoría.",
+        text: "La descripción (razón del ajuste) es obligatoria.",
         icon: "warning",
-        position: "top-end",
-        timer: 1500,
       });
       return;
     }

@@ -210,8 +210,6 @@ export default function TraspasosPage() {
         title: "Error",
         text: error.message,
         icon: "error",
-        position: "top-end",
-        timer: 1500,
       });
       throw error; // Re-lanzar para que el modal lo maneje
     }

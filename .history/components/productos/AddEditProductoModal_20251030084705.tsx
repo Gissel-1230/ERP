@@ -86,7 +86,7 @@ export default function AddEditProductoModal({
         text: "Debes seleccionar una categoría.",
         icon: "warning",
         position: "top-end",
-        timer: 1500,
+        timer: 3000,
       });
       return;
     }

@@ -16,7 +16,6 @@ interface AlertOptions {
   cancelButtonColor?: string;
   toast?: boolean;
   position?: "top" | "top-start" | "top-end" | "center" | "center-start" | "center-end" | "bottom" | "bottom-start" | "bottom-end";
-  timer?: number;
 }
 
 

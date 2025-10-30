@@ -16,24 +16,18 @@ interface AlertOptions {
   cancelButtonColor?: string;
   toast?: boolean;
   position?: "top" | "top-start" | "top-end" | "center" | "center-start" | "center-end" | "bottom" | "bottom-start" | "bottom-end";
-  timer?: number;
 }
 
 
 export function showAlert(options: AlertOptions) {
-  return MySwal.fire({
-    title: options.title || "Aviso",
+ return MySwal.fire({
+    title: options.title ?? "Aviso",
     text: options.text,
-    icon: options.icon || "info",
-    confirmButtonText: options.confirmButtonText || "Aceptar",
-    confirmButtonColor: options.confirmButtonColor || undefined,
-    showCancelButton: options.showCancelButton || false,
-    cancelButtonText: options.cancelButtonText || "Cancelar",
-    cancelButtonColor: options.cancelButtonColor || undefined,
-    toast: options.toast || false,
-    position: options.position || "center",
-    timer: options.timer,
-    timerProgressBar: options.timer ? true : false,
+    icon: options.icon ?? "info",
+    confirmButtonText: options.confirmButtonText ?? "Aceptar",
+    confirmButtonColor: options.confirmButtonColor ?? undefined,
+    showCancelButton: options.showCancelButton ?? false,
+    cancelButtonText: options.cancelButtonText ?? "Cancelar",
+    cancelButtonColor: options.cancelButtonColor ?? undefined,
   });
 }
-

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { showAlert } from "../common/sweetAlert";
 // Tipos para el estado del formulario y los errores, para máxima seguridad de tipos.
 interface FormData {
   email: string;
@@ -8,7 +7,7 @@ interface FormData {
   rememberMe: boolean;
 }
 
-type FormErrors = Partial<Record<keyof Omit<FormData, "rememberMe">, string>>;
+type FormErrors = Partial<Record<keyof Omit<FormData, 'rememberMe'>, string>>;
 
 const Login = () => {
   const router = useRouter();
@@ -24,7 +23,7 @@ const Login = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-
+    
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -55,83 +54,73 @@ const Login = () => {
     e.preventDefault();
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
+        setErrors(validationErrors);
+        return;
     }
 
     setIsLoading(true);
     setErrors({}); // Limpia errores previos al intentar de nuevo
 
     try {
-      // 1. Preparamos los datos que se enviarán
-      const loginData = {
-        email: formData.email,
-        password: formData.password,
-      };
+        // 1. Preparamos los datos que se enviarán
+        const loginData = {
+            email: formData.email,
+            password: formData.password
+        };
 
-      // 2. Hacemos la llamada a tu API de back-end
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/login`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(loginData),
+        // 2. Hacemos la llamada a tu API de back-end
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/login`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(loginData),
+        });
+
+        const data = await response.json();
+
+        // 3. Manejamos la respuesta del servidor
+        if (!response.ok) {
+            // Si el servidor responde con un error (ej. 401 Credenciales inválidas)
+            // se lanza un error para que lo capture el 'catch'
+            throw new Error(data.message || 'Ocurrió un error al iniciar sesión.');
         }
-      );
 
-      const data = await response.json();
+        // 4. Si el login es exitoso
+        console.log('Token recibido:', data.token); 
+        // guardando el cookie
+        document.cookie = `token=${data.token}; path=/; SameSite=Strict`;
+        // Guardamos el token en el almacenamiento local del navegador para usarlo después
+        localStorage.setItem('authToken', data.token);
+        alert('¡Login exitoso!');
+        
+        
+        // En un futuro, aquí es donde redirigirías al usuario al dashboard
+        // window.location.href = '/dashboard';
+        // Pasamos el token guardado en localStorage
+        const dashboardRes = await 
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard`, {
+          headers: { Authorization: `Bearer ${data.token}` }
+        });
+          const dashboardData = await dashboardRes.json();
+          console.log('Datos del dashboard:', dashboardData);
 
-      // 3. Manejamos la respuesta del servidor
-      if (!response.ok) {
-        // Si el servidor responde con un error (ej. 401 Credenciales inválidas)
-        // se lanza un error para que lo capture el 'catch'
-        throw new Error(data.message || "Ocurrió un error al iniciar sesión.");
-      }
+          if(!dashboardRes.ok) throw new Error(dashboardData.msg || 'Error al cargar el dashboard.');
 
-      // 4. Si el login es exitoso
-      console.log("Token recibido:", data.token);
-      // guardando el cookie
-      document.cookie = `token=${data.token}; path=/; SameSite=Strict`;
-      // Guardamos el token en el almacenamiento local del navegador para usarlo después
-      localStorage.setItem("authToken", data.token);
-      //alert("¡Login exitoso!");
-      showAlert({
-        title: "¡Login exitoso!",
-        icon: "success",
-        position: "top-end",
-        timer: 1500,
-      });
+          //guardar los datos del usuario y el menu en localStorage(el meno contiene las rutas con acceso)
+          localStorage.setItem("userData", JSON.stringify(dashboardData.user));
+          localStorage.setItem("menuOptions", JSON.stringify(dashboardData.menu));
 
-      // En un futuro, aquí es donde redirigirías al usuario al dashboard
-      // window.location.href = '/dashboard';
-      // Pasamos el token guardado en localStorage
-      const dashboardRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/dashboard`,
-        {
-          headers: { Authorization: `Bearer ${data.token}` },
-        }
-      );
-      const dashboardData = await dashboardRes.json();
-      console.log("Datos del dashboard:", dashboardData);
+          alert(`¡Bienvenido ${dashboardData.user.full_name}!`);
+          // Redirigir al usuario al dashboard
+          router.push('/dashboard');// navigate("/dashboard")
 
-      if (!dashboardRes.ok)
-        throw new Error(dashboardData.msg || "Error al cargar el dashboard.");
-
-      //guardar los datos del usuario y el menu en localStorage(el meno contiene las rutas con acceso)
-      localStorage.setItem("userData", JSON.stringify(dashboardData.user));
-      localStorage.setItem("menuOptions", JSON.stringify(dashboardData.menu));
-
-      alert(`¡Bienvenido ${dashboardData.user.full_name}!`);
-      // Redirigir al usuario al dashboard
-      router.push("/dashboard"); // navigate("/dashboard")
     } catch (error: any) {
-      // 5. Si hay un error de red o del servidor, lo mostramos en el formulario
-      setErrors({ password: error.message });
+        // 5. Si hay un error de red o del servidor, lo mostramos en el formulario
+        setErrors({ password: error.message });
     } finally {
-      // 6. Esto se ejecuta siempre, al final de la llamada, para detener el spinner
-      setIsLoading(false);
+        // 6. Esto se ejecuta siempre, al final de la llamada, para detener el spinner
+        setIsLoading(false);
     }
-  };
+};
 
   return (
     <main className="flex min-h-screen w-full items-center justify-center bg-slate-100 p-4">
@@ -140,12 +129,7 @@ const Login = () => {
           <header className="mb-8 text-center">
             <div className="mb-4 inline-flex items-center justify-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 40 40"
-                  fill="currentColor"
-                >
+                <svg width="24" height="24" viewBox="0 0 40 40" fill="currentColor">
                   <rect width="40" height="40" rx="8" fill="none" />
                   <path d="M12 14h16v2H12v-2zm0 4h16v2H12v-2zm0 4h12v2H12v-2z" />
                   <circle cx="30" cy="22" r="3" />
@@ -160,10 +144,7 @@ const Login = () => {
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             <div className="flex flex-col gap-2">
-              <label
-                htmlFor="email"
-                className="text-sm font-medium text-slate-700"
-              >
+              <label htmlFor="email" className="text-sm font-medium text-slate-700">
                 Correo electrónico
               </label>
               <input
@@ -174,22 +155,16 @@ const Login = () => {
                 onChange={handleChange}
                 placeholder="tu@empresa.com"
                 className={`w-full rounded-lg border-2 bg-white px-4 py-3 text-base transition-colors focus:outline-none focus:ring-2 
-                  ${
-                    errors.email
-                      ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
-                      : "border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20"
+                  ${errors.email
+                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                    : 'border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20'
                   }`}
               />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-              )}
+              {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
             </div>
 
             <div className="flex flex-col gap-2">
-              <label
-                htmlFor="password"
-                className="text-sm font-medium text-slate-700"
-              >
+              <label htmlFor="password" className="text-sm font-medium text-slate-700">
                 Contraseña
               </label>
               <input
@@ -200,15 +175,12 @@ const Login = () => {
                 onChange={handleChange}
                 placeholder="••••••••"
                 className={`w-full rounded-lg border-2 bg-white px-4 py-3 text-base transition-colors focus:outline-none focus:ring-2 
-                  ${
-                    errors.password
-                      ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
-                      : "border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20"
+                  ${errors.password
+                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                    : 'border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20'
                   }`}
               />
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-              )}
+              {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
             </div>
 
             <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -220,14 +192,9 @@ const Login = () => {
                   onChange={handleChange}
                   className="h-4 w-4 cursor-pointer rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                 />
-                <span className="select-none text-sm text-slate-600">
-                  Recordarme
-                </span>
+                <span className="select-none text-sm text-slate-600">Recordarme</span>
               </label>
-              <a
-                href="#"
-                className="text-sm font-medium text-indigo-600 hover:underline"
-              >
+              <a href="#" className="text-sm font-medium text-indigo-600 hover:underline">
                 ¿Olvidaste tu contraseña?
               </a>
             </div>
@@ -237,20 +204,15 @@ const Login = () => {
               disabled={isLoading}
               className="mt-2 flex w-full items-center justify-center gap-3 rounded-lg bg-indigo-600 px-6 py-3 text-base font-semibold text-white transition-transform hover:-translate-y-0.5 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-indigo-400 disabled:hover:translate-y-0"
             >
-              {isLoading && (
-                <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-              )}
+              {isLoading && <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>}
               {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
             </button>
           </form>
 
           <footer className="mt-8 text-center">
             <p className="text-sm text-slate-500">
-              ¿Necesitas ayuda?{" "}
-              <a
-                href="#"
-                className="font-medium text-indigo-600 hover:underline"
-              >
+              ¿Necesitas ayuda?{' '}
+              <a href="#" className="font-medium text-indigo-600 hover:underline">
                 Contacta a soporte
               </a>
             </p>

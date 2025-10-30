@@ -85,8 +85,7 @@ export default function AddEditProductoModal({
         title: "¡Oh no, algo no salió bien!",
         text: "Debes seleccionar una categoría.",
         icon: "warning",
-        position: "top-end",
-        timer: 1500,
+        position: "center",
       });
       return;
     }

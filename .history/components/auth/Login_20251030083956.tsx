@@ -99,7 +99,7 @@ const Login = () => {
         title: "¡Login exitoso!",
         icon: "success",
         position: "top-end",
-        timer: 1500,
+        timer: 2000,
       });
 
       // En un futuro, aquí es donde redirigirías al usuario al dashboard

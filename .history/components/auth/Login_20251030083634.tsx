@@ -98,8 +98,6 @@ const Login = () => {
       showAlert({
         title: "¡Login exitoso!",
         icon: "success",
-        position: "top-end",
-        timer: 1500,
       });
 
       // En un futuro, aquí es donde redirigirías al usuario al dashboard

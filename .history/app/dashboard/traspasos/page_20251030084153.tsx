@@ -36,6 +36,7 @@ import { Plus, Loader2, Calendar } from "lucide-react"; // Agregado Calendar
 import { Skeleton } from "@/components/ui/skeleton";
 import { showAlert } from "@/components/common/sweetAlert";
 
+
 export default function TraspasosPage() {
   const { user, token, isLoading: isLoadingAuth } = useAuth();
 
@@ -141,7 +142,7 @@ export default function TraspasosPage() {
         icon: "error",
         confirmButtonColor: "#d32f2f",
         position: "top-end",
-        timer: 1500,
+        
       });
     }
   };
@@ -171,24 +172,16 @@ export default function TraspasosPage() {
     await fetchTraspasos();
   };
 
-  const handleExportExcel = async (id: string | number, folio: string) => {
+ const handleExportExcel = async (id: string | number, folio: string) => {
     if (!token) return;
     try {
       await exportTraspasoToExcel(id, folio, token);
-      await showAlert({
-        position: "top-end",
-        icon: "success",
-        title: "El archivo Excel se ha descargado correctamente.",
-        timer: 1500,
-      });
     } catch (error: any) {
       await showAlert({
         title: "Error",
         text: `Error al descargar Excel: ${error.message}`,
         icon: "error",
         confirmButtonColor: "#d32f2f",
-        position: "top-end",
-        timer: 1500,
       });
     }
   };
@@ -202,16 +195,12 @@ export default function TraspasosPage() {
         title: "¡Descargado!",
         text: "Reporte mensual descargado exitosamente.",
         icon: "success",
-        position: "top-end",
-        timer: 1500,
       });
     } catch (error: any) {
       await showAlert({
         title: "Error",
         text: error.message,
         icon: "error",
-        position: "top-end",
-        timer: 1500,
       });
       throw error; // Re-lanzar para que el modal lo maneje
     }

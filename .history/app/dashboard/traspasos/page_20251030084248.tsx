@@ -179,6 +179,7 @@ export default function TraspasosPage() {
         position: "top-end",
         icon: "success",
         title: "El archivo Excel se ha descargado correctamente.",
+        showConfirmButton: false,
         timer: 1500,
       });
     } catch (error: any) {
@@ -202,16 +203,12 @@ export default function TraspasosPage() {
         title: "¡Descargado!",
         text: "Reporte mensual descargado exitosamente.",
         icon: "success",
-        position: "top-end",
-        timer: 1500,
       });
     } catch (error: any) {
       await showAlert({
         title: "Error",
         text: error.message,
         icon: "error",
-        position: "top-end",
-        timer: 1500,
       });
       throw error; // Re-lanzar para que el modal lo maneje
     }

@@ -94,12 +94,10 @@ const Login = () => {
       document.cookie = `token=${data.token}; path=/; SameSite=Strict`;
       // Guardamos el token en el almacenamiento local del navegador para usarlo después
       localStorage.setItem("authToken", data.token);
-      //alert("¡Login exitoso!");
+      alert("¡Login exitoso!");
       showAlert({
         title: "¡Login exitoso!",
         icon: "success",
-        position: "top-end",
-        timer: 1500,
       });
 
       // En un futuro, aquí es donde redirigirías al usuario al dashboard
