@@ -1,0 +1,29 @@
+"use client";
+
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
+
+interface AlertOptions {
+  title?: string;
+  text?: string;
+  icon?: "success" | "error" | "warning" | "info" | "question";
+  confirmButtonText?: string;
+  showCancelButton?: boolean;
+  cancelButtonText?: string;
+  // Añade aquí más configuraciones de Swal que necesites
+  confirmButtonColor: '#d32f2f', // 
+  cancelButtonColor: '#3085d6', // Azul para cancelar
+}
+
+export function showAlert(options: AlertOptions) {
+  return MySwal.fire({
+    title: options.title || "Aviso",
+    text: options.text || "",
+    icon: options.icon || "info",
+    confirmButtonText: options.confirmButtonText || "Aceptar",
+    showCancelButton: options.showCancelButton || false,
+    cancelButtonText: options.cancelButtonText || "Cancelar",
+  });
+}
