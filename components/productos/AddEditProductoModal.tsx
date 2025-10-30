@@ -88,7 +88,6 @@ export default function AddEditProductoModal({
             category_id: parseInt(rawCategoryId) || 0, 
             
         }, 
-        // ✅ CORRECCIÓN: Si el ID existe (sea number o string), lo convertimos a string.
         productIdToPass ? String(productIdToPass) : undefined 
         );
     };

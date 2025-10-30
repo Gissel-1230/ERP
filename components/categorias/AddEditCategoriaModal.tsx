@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import type { Inventario, CategoryItem } from '@/lib/data'; // Importa los tipos necesarios
 
-// --- INTERFAZ DE PROPS (CORREGIDA) ---
 interface AddEditCategoriaModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -47,7 +46,6 @@ export default function AddEditCategoriaModal({
         // 2. LLAMA a onSave, CONVIRTIENDO el ID a STRING
         onSave(
             { nombre, descripcion },
-            // ✅ CORRECCIÓN: Usamos String() para asegurar que el ID sea un string
             idToPass ? String(idToPass) : undefined 
         ); 
         // Nota: Dejamos que el componente padre (page.tsx) cierre el modal en caso de éxito.

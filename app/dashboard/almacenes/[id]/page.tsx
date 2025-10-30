@@ -3,13 +3,13 @@
 
 import { useState, useEffect } from 'react';
 import { notFound, useParams, useRouter } from 'next/navigation';
-import { getAlmacenById } from '@/lib/almacen-store'; // Asumimos que sigue leyendo de la caché
-import { InventoryController } from '@/lib/inventory-store'; // <-- Importamos el nuevo store de inventario
+import { getAlmacenById, getAlmacenes } from '@/lib/almacen-store'; 
+import { InventoryController } from '@/lib/inventory-store'; 
 import { type Almacen, type Inventario } from '@/lib/data';
 import { Plus, ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import InventarioCard from '@/components/almacenes/InventarioCard'; 
-import RegisterInitialStockModal from '@/components/almacenes/RegisterInitialStockModal'; // <-- Nuevo nombre del modal
+import RegisterInitialStockModal from '@/components/almacenes/RegisterInitialStockModal'; 
 import { useAuth } from '@/app/context/AuthContext'; 
 
 export default function AlmacenDetailPage() {
@@ -25,26 +25,48 @@ export default function AlmacenDetailPage() {
   const [error, setError] = useState<string | null>(null); 
   const [saveError, setSaveError] = useState<string | null>(null); 
 
-  // --- Función para cargar/refrescar los datos del almacén (sigue usando store en memoria) ---
-  const refreshAlmacen = () => {
-    // Nota: getAlmacenById aún lee de la caché llenada por getAlmacenes.
-    const currentAlmacenData = getAlmacenById(almacenId);
-    setAlmacen(currentAlmacenData); // Actualiza con datos de memoria
-    setIsLoading(false); // Asume que la carga terminó
+  // FUNCIÓN refreshAlmacen (AHORA ES ASÍNCRONA Y USA LA API)
+  const refreshAlmacen = async (authToken: string | null) => {
+    // Para ver el stock actualizado, DEBEMOS llamar a la API de nuevo
+    // para que el back-end recalcule el stock con los nuevos movimientos.
+    console.log("Refrescando datos del almacén desde la API...");
+    setIsLoading(true);
+    try {
+        if (!authToken) throw new Error("No autenticado");
+        
+        // 1. Llama a getAlmacenes (que llama a la API) para refrescar la caché
+        await getAlmacenes(authToken); 
+        
+        // 2. Lee de la caché recién actualizada
+        const currentAlmacenData = getAlmacenById(almacenId); 
+        if (currentAlmacenData) {
+            setAlmacen(currentAlmacenData);
+        } else {
+            setAlmacen(null); // No encontrado
+        }
+    } catch (err: any) {
+         console.error("Error al refrescar almacén:", err);
+         setError("No se pudieron recargar los datos.");
+         if (err.message.includes("401")) logout(); // Cierra sesión si el token expiró
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   // --- Carga inicial del almacén ---
   useEffect(() => {
-    setIsLoading(true);
     if (!isLoadingAuth && token) {
         // Leemos de la caché del store (que se llenó en la página anterior)
         const initialData = getAlmacenById(almacenId);
+        
+        // Si la caché está vacía (ej. recarga de página), la llenamos
         if (!initialData) { 
-             setAlmacen(null); // 404
+             console.warn("Caché vacía o ítem no encontrado, cargando datos...");
+             refreshAlmacen(token); // Llama a la API
         } else {
-             setAlmacen(initialData);
+             setAlmacen(initialData); // Usa la caché
+             setIsLoading(false);
         }
-        setIsLoading(false);
     } else if (!isLoadingAuth && !token) {
         setError("No autenticado.");
         setIsLoading(false);
@@ -53,7 +75,7 @@ export default function AlmacenDetailPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [almacenId, token, isLoadingAuth]); 
 
-  // --- 👇 FUNCIÓN PARA REGISTRAR EL MOVIMIENTO (ON SAVE) 👇 ---
+  // --- FUNCIÓN PARA REGISTRAR EL MOVIMIENTO (ON SAVE) ---
   const handleRegisterStock = async (
     data: { 
         product_id: number; 
@@ -71,18 +93,11 @@ export default function AlmacenDetailPage() {
         // 1. Llama a la API para registrar el movimiento
         await InventoryController.registerMovement(data, token); 
         
-        // 2. Si es exitoso, MUESTRA MENSAJE DE ÉXITO (al ser un movimiento)
+        // 2. Si es exitoso, MUESTRA MENSAJE DE ÉXITO
         alert(`Entrada de ${data.quantity} unidades registrada con éxito.`);
 
-        // 3. Refresca la vista para ver el stock actualizado (desde la caché que el trigger actualizará)
-        // Nota: Para ver el cambio, el trigger debe actualizar la DB, y la página principal
-        //       de almacenes debe recargarse, lo cual actualiza la caché.
-        //       Aquí solo refrescamos la vista actual (que lee de la caché).
-        //       El stock real se actualizará en la DB.
-        
-        // *** ESTO ES CLAVE: Necesitamos actualizar la caché del store principal ***
-        // Por ahora, solo cerramos el modal y forzamos la actualización de la página
-        // para que la caché se actualice cuando se vuelva a la vista principal.
+        // 3. REFRESCA LOS DATOS DE LA API
+        await refreshAlmacen(token);
         
         setIsModalOpen(false); 
         
@@ -105,13 +120,10 @@ export default function AlmacenDetailPage() {
   if (almacen === null) notFound(); 
   if (!almacen) return <div>{error || "Error al cargar el almacén."}</div>; 
 
-  const canAddMore = almacen.inventarios.length < 10; // Lógica original (ahora obsoleta)
-
-
-  // --- JSX Principal ---
+  // --- JSX Principal (SIN CAMBIOS) ---
   return (
     <div className="flex flex-col gap-8 p-4 md:p-8">
-      {/* Encabezado y Link Volver */}
+      {/* ... (Tu JSX existente para el encabezado) ... */}
       <div>
         <Link href="/dashboard/almacenes" className="mb-4 inline-flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600">
           <ArrowLeft className="h-4 w-4" /> Volver a Almacenes
@@ -121,12 +133,12 @@ export default function AlmacenDetailPage() {
         {almacen.descripcion && <p className="mt-1 text-base text-slate-500">{almacen.descripcion}</p>}
       </div>
 
-      {/* Sección de Inventarios (Categorías) */}
+      {/* ... (Tu JSX existente para la sección de inventarios y el botón) ... */}
       <div className="flex items-center justify-between border-t pt-6">
         <h2 className="text-2xl font-semibold">Stock por Categoría</h2>
         <button
-          onClick={() => {setIsModalOpen(true); setSaveError(null);}} // Abre modal de stock
-          disabled={isSaving} 
+          onClick={() => {setIsModalOpen(true); setSaveError(null);}} 
+          disabled={isSaving || isLoading} // <-- Actualizado a isLoading
           className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-400"
         >
           <Plus className="h-5 w-5" />
@@ -134,11 +146,8 @@ export default function AlmacenDetailPage() {
         </button>
       </div>
 
-      {/* Mostrar error general si existe y el modal está cerrado */}
       {error && !isModalOpen && <p className="text-center text-red-600">{error}</p>}
 
-
-      {/* Grid de Inventarios (Categorías) */}
       {almacen.inventarios.length > 0 ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {almacen.inventarios.map(inventario => (
@@ -149,13 +158,13 @@ export default function AlmacenDetailPage() {
           <p className="text-center text-slate-500 col-span-full">Este almacén aún no tiene productos asociados. Registra la primera entrada.</p>
       )}
       
-      {/* Modal para Registrar Stock Inicial */}
+      {/* ... (Tu JSX existente para el modal) ... */}
       {isModalOpen && ( 
         <RegisterInitialStockModal
           isOpen={isModalOpen}
           onClose={() => {setIsModalOpen(false); setSaveError(null);}} 
           onSave={handleRegisterStock} 
-          warehouseId={almacenId} // Pasa el ID del almacén actual
+          warehouseId={almacenId} 
           isSaving={isSaving} 
           saveError={saveError} 
         />

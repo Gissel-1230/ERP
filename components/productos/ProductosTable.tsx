@@ -51,16 +51,13 @@ export default function ProductosTable({ products, onEdit, onDelete, isDeletingI
                   
                   {/* Stock Total */}
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-bold"
-                      // ✅ CORREGIDO: Usamos minimum_stock
                       style={{ color: product.current_stock_total <= product.minimum_stock ? '#dc2626' : '#16a34a' }} 
                   >
-                    {/* ✅ CORREGIDO: Usamos unit_of_measure */}
                     {product.current_stock_total} {product.unit_of_measure}
                   </td>
 
                   {/* Stock Mínimo */}
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-slate-400">
-                    {/* ✅ CORREGIDO: Usamos minimum_stock */}
                     {product.minimum_stock}
                   </td>
 

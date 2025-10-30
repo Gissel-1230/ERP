@@ -69,7 +69,7 @@ const Login = () => {
         };
 
         // 2. Hacemos la llamada a tu API de back-end
-        const response = await fetch('http://localhost:3000/api/v1/users/login', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/login`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(loginData),
@@ -96,7 +96,7 @@ const Login = () => {
         // window.location.href = '/dashboard';
         // Pasamos el token guardado en localStorage
         const dashboardRes = await 
-        fetch('http://localhost:3000/api/v1/dashboard', {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard`, {
           headers: { Authorization: `Bearer ${data.token}` }
         });
           const dashboardData = await dashboardRes.json();

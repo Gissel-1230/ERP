@@ -1,6 +1,6 @@
 // lib/inventory-store.ts
 import { getAuthHeaders } from './almacen-store'; // Utilidad para obtener headers
-const API_URL = 'http://localhost:3000/api/v1';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // Define la estructura de datos que esperamos enviar para un movimiento
 interface MovementData {
@@ -8,7 +8,7 @@ interface MovementData {
     warehouse_id: number; 
     quantity: number; 
     description: string; 
-    movement_type: 'IN' | 'OUT'; // O cualquier tipo que definas
+    movement_type: 'IN' | 'OUT' | 'ADJUST-IN' | 'ADJUST-OUT';
 }
 
 // Define la estructura de datos que esperamos recibir de la API

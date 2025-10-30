@@ -1,10 +1,9 @@
 // lib/product-store.ts
 import { getAuthHeaders } from './almacen-store';
 import { getCategories } from './category-store';
-// ✅ Importa GlobalProduct desde data.ts y el tipo CategoryItem
 import { type CategoryItem, type GlobalProduct } from './data';
 
-const API_URL = 'http://localhost:3000/api/v1';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // --- Caché en memoria ---
 let productsCache: GlobalProduct[] = [];
@@ -44,6 +43,61 @@ export const getProducts = async (token: string | null): Promise<GlobalProduct[]
         
     } catch (error) {
         console.error("[ProductStore] Error al obtener productos:", error);
+        throw error;
+    }
+};
+
+export const getProductsByCategory = async (
+    token: string | null, 
+    categoryId: string | number
+): Promise<GlobalProduct[]> => {
+    
+    if (!token) { throw new Error("Token no proporcionado."); }
+    if (!categoryId) { return []; } // No buscar si no hay categoría
+
+    // Limpiamos el prefijo 'INV-' para obtener el ID numérico
+    const numericId = String(categoryId).split('-')[1] || categoryId;
+    const url = `${API_URL}/products/by-category/${numericId}`;
+
+    console.log("[ProductStore] Llamando a API para productos por categoría:", url);
+
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: getAuthHeaders(token)
+        });
+
+        if (!response.ok) {
+             if (response.status === 401) throw new Error("401 Unauthorized.");
+             throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        
+        if (!data.ok || !Array.isArray(data.products)) {
+            console.error("[ProductStore] Respuesta de API inválida:", data);
+            return [];
+        }
+
+        // Transformamos los IDs para el front-end (PROD-X)
+        const transformedProducts: GlobalProduct[] = data.products.map((prod: any) => ({
+            ...prod,
+            product_id: `PROD-${prod.product_id}`,
+            // Aseguramos que los campos de la interfaz GlobalProduct existan
+            product_name: prod.product_name,
+            unit_price: parseFloat(prod.unit_price) || 0,
+            description: prod.description || '',
+            unit_of_measure: prod.unit_of_measure || 'Unidad',
+            minimum_stock: parseInt(prod.minimum_stock, 10) || 0,
+            category_id: parseInt(prod.category_id, 10),
+            categoria_nombre: prod.categoria_nombre || '', // El back-end no lo envía aquí, pero lo definimos
+            current_stock_total: 0 // El stock total no es relevante para esta lista
+        }));
+        
+        return transformedProducts;
+        
+    } catch (error) {
+        console.error("[ProductStore] Error al obtener productos por categoría:", error);
         throw error;
     }
 };
