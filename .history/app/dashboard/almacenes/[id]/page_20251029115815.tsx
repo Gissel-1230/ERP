@@ -95,6 +95,7 @@ export default function AlmacenDetailPage() {
         
         // 2. Si es exitoso, MUESTRA MENSAJE DE ÉXITO
         alert(`Entrada de ${data.quantity} unidades registrada con éxito.`);
+        
 
         // 3. REFRESCA LOS DATOS DE LA API
         await refreshAlmacen(token);

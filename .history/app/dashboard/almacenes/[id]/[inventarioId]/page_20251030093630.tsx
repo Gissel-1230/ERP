@@ -132,7 +132,7 @@ export default function InventarioDetailPage() {
         await InventoryController.registerMovement(movementData, token); 
         
         //alert(`Ajuste (${data.movement_type}) de ${data.quantity} unidades registrado.`);
-        showAlert({
+        const result = await showAlert({
             title: "Ajuste éxitoso",
             text: `Ajuste (${data.movement_type}) de ${data.quantity} unidades registrado.`,
             icon: "success",
@@ -157,29 +157,20 @@ export default function InventarioDetailPage() {
     setIsAdjustModalOpen(true);   
   };
 
-const handleDeleteStock = async (producto: Producto) => {
-  const result = await showAlert({
-    title: `¿Estás seguro de AJUSTAR A CERO el stock de ${producto.nombre}?`,
-    text: `Esta acción registrará una SALIDA por ${producto.cantidad} unidades.`,
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: "Sí, ajustar",
-    cancelButtonText: "Cancelar",
-    confirmButtonColor: "#d32f2f",
-    cancelButtonColor: "#3085d6",
-  });
+  const handleDeleteStock = (producto: Producto) => {
+    if (window.confirm(`¿Estás seguro de AJUSTAR A CERO el stock de ${producto.nombre}?
+Esta acción registrará una SALIDA por ${producto.cantidad} unidades.`)) { 
+        
+        const rawProductId = String(producto.id).split('-')[1] || producto.id;
 
-  if (!result.isConfirmed) return;
-
-  const rawProductId = String(producto.id).split('-')[1] || producto.id;
-
-  handleAdjustStock({
-    product_id: parseInt(String(rawProductId), 10),
-    quantity: producto.cantidad,
-    movement_type: 'ADJUST-OUT',
-    description: `Ajuste a CERO por eliminación manual.`,
-  });
-};
+        handleAdjustStock({
+            product_id: parseInt(String(rawProductId), 10),
+            quantity: producto.cantidad,
+            movement_type: 'ADJUST-OUT',
+            description: `Ajuste a CERO por eliminación manual.`
+        });
+    }
+  };
 
   // --- (Renderizado condicional) ---
   if (inventario === undefined || isLoadingAuth || isLoading) return (
