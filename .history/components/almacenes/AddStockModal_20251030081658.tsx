@@ -71,7 +71,7 @@ export default function AddStockModal({
 
     if (!rawProductId || quantityValue <= 0) {
       //alert("Por favor, selecciona un producto y una cantidad válida.");
-      showAlert({
+      await showAlert({
         title: "¡Algo no salió bien!",
         text: "Por favor, selecciona un producto y una cantidad válida.",
         icon: "warning",

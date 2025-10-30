@@ -59,7 +59,7 @@ export default function AdjustStockModal({
     if (!description || description.trim() === "") {
       //alert("La descripción (razón del ajuste) es obligatoria.");
       showAlert({
-        title: "Información incompleta",
+        title: "¡Oh no, algo no salió bien!",
         text: "La descripción (razón del ajuste) es obligatoria.",
         icon: "warning",
       });
@@ -69,7 +69,7 @@ export default function AdjustStockModal({
       //alert("La cantidad debe ser un número positivo.");
       showAlert({
         title: "Tipo de dato incorrecto",
-        text: "La cantidad debe ser un número positivo.",
+        text: "La descripción (razón del ajuste) es obligatoria.",
         icon: "warning",
       });
       return;

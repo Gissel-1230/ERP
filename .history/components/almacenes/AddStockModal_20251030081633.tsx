@@ -70,11 +70,11 @@ export default function AddStockModal({
       String(selectedProductId).split("-")[1] || selectedProductId;
 
     if (!rawProductId || quantityValue <= 0) {
-      //alert("Por favor, selecciona un producto y una cantidad válida.");
-      showAlert({
-        title: "¡Algo no salió bien!",
-        text: "Por favor, selecciona un producto y una cantidad válida.",
-        icon: "warning",
+      alert("Por favor, selecciona un producto y una cantidad válida.");
+      await showAlert({
+        title: "¡Solicitud enviada!",
+        text: "Solicitud de traspaso enviada exitosamente.",
+        icon: "success",
       });
       return;
     }

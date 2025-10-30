@@ -102,8 +102,8 @@ export default function RegisterInitialStockModal({
     if (!rawProductId || quantityValue <= 0) {
       //alert("Por favor, selecciona un producto y una cantidad mayor a cero.");
       showAlert({
-        title: "Información incompleta",
-        text: "Por favor, selecciona un producto y una cantidad mayor a cero.",
+        title: "¡Oh no, algo no salió bien!",
+        text: "La descripción (razón del ajuste) es obligatoria.",
         icon: "warning",
       });
       return;

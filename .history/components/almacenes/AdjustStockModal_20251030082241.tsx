@@ -59,7 +59,7 @@ export default function AdjustStockModal({
     if (!description || description.trim() === "") {
       //alert("La descripción (razón del ajuste) es obligatoria.");
       showAlert({
-        title: "Información incompleta",
+        title: "Alto, falta ",
         text: "La descripción (razón del ajuste) es obligatoria.",
         icon: "warning",
       });

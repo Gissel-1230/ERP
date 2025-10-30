@@ -100,10 +100,10 @@ export default function RegisterInitialStockModal({
     const rawWarehouseId = warehouseId.split("-")[1]; // Limpiamos el prefijo ALM-
 
     if (!rawProductId || quantityValue <= 0) {
-      //alert("Por favor, selecciona un producto y una cantidad mayor a cero.");
+      alert("Por favor, selecciona un producto y una cantidad mayor a cero.");
       showAlert({
-        title: "Información incompleta",
-        text: "Por favor, selecciona un producto y una cantidad mayor a cero.",
+        title: "¡Oh no, algo no salió bien!",
+        text: "La descripción (razón del ajuste) es obligatoria.",
         icon: "warning",
       });
       return;

@@ -59,19 +59,14 @@ export default function AdjustStockModal({
     if (!description || description.trim() === "") {
       //alert("La descripción (razón del ajuste) es obligatoria.");
       showAlert({
-        title: "Información incompleta",
-        text: "La descripción (razón del ajuste) es obligatoria.",
-        icon: "warning",
+        title: "¡Oh no, algo no salió bien!",
+        text: "Solicitud de traspaso enviada exitosamente.",
+        icon: "success",
       });
       return;
     }
     if (!quantityValue || quantityValue <= 0) {
-      //alert("La cantidad debe ser un número positivo.");
-      showAlert({
-        title: "Tipo de dato incorrecto",
-        text: "La cantidad debe ser un número positivo.",
-        icon: "warning",
-      });
+      alert("La cantidad debe ser un número positivo.");
       return;
     }
 
