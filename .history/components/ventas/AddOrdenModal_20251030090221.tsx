@@ -31,7 +31,7 @@ export default function AddOrdenModal({ isOpen, onClose, onAddOrden }: AddOrdenM
       //alert('Por favor, completa todos los campos.');
       showAlert({
         title: "Información incompleta",
-        text: "Por favor, completa todos los campos.",
+        text: "La descripción (razón del ajuste) es obligatoria.",
         icon: "warning",
       });
       return;

@@ -73,17 +73,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => { // <-- 
 
     setToken(newToken); // <-- Actualizamos estado del token
     setUser(userData);  // <-- Actualizamos estado del user
-    //console.log("AuthProvider login: Sesión guardada, redirigiendo...");
+    console.log("AuthProvider login: Sesión guardada, redirigiendo...");
     router.push('/dashboard'); // Redirige después de guardar
   };
 
   const logout = () => {
-    //console.log("AuthProvider logout: Cerrando sesión...");
+    console.log("AuthProvider logout: Cerrando sesión...");
     Cookies.remove("token", { path: "/" });      // <-- Elimina cookie
     localStorage.removeItem("user");          // <-- Elimina localStorage
     setToken(null);                           // <-- Limpia estado del token
     setUser(null);                            // <-- Limpia estado del user
-    //console.log("AuthProvider logout: Sesión cerrada, redirigiendo...");
+    console.log("AuthProvider logout: Sesión cerrada, redirigiendo...");
     router.push("/");                         // Redirige al login
   };
 

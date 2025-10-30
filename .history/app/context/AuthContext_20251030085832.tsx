@@ -83,7 +83,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => { // <-- 
     localStorage.removeItem("user");          // <-- Elimina localStorage
     setToken(null);                           // <-- Limpia estado del token
     setUser(null);                            // <-- Limpia estado del user
-    //console.log("AuthProvider logout: Sesión cerrada, redirigiendo...");
+    console.log("AuthProvider logout: Sesión cerrada, redirigiendo...");
     router.push("/");                         // Redirige al login
   };
 

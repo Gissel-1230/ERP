@@ -46,9 +46,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => { // <-- 
         const storedUser = JSON.parse(storedUserString);
         setToken(storedToken); // <-- Guardamos el token en el estado
         setUser(storedUser);   // <-- Guardamos el user en el estado
-        //console.log("AuthProvider useEffect: Sesión restaurada.");
+        console.log("AuthProvider useEffect: Sesión restaurada.");
       } catch (e) {
-       // console.error("AuthProvider useEffect: Error al parsear datos de usuario", e);
+        console.error("AuthProvider useEffect: Error al parsear datos de usuario", e);
         // Si hay error, limpiamos todo
         Cookies.remove("token", { path: "/" });
         localStorage.removeItem("user");
@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => { // <-- 
   }, []);
 
   const login = (newToken: string, userData: UserPayload) => {
-    //console.log("AuthProvider login: Guardando sesión...");
+    console.log("AuthProvider login: Guardando sesión...");
     // Guardamos token en COOKIE (consistente con tu login page)
     Cookies.set("token", newToken, {
       path: "/",
@@ -73,17 +73,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => { // <-- 
 
     setToken(newToken); // <-- Actualizamos estado del token
     setUser(userData);  // <-- Actualizamos estado del user
-    //console.log("AuthProvider login: Sesión guardada, redirigiendo...");
+    console.log("AuthProvider login: Sesión guardada, redirigiendo...");
     router.push('/dashboard'); // Redirige después de guardar
   };
 
   const logout = () => {
-    //console.log("AuthProvider logout: Cerrando sesión...");
+    console.log("AuthProvider logout: Cerrando sesión...");
     Cookies.remove("token", { path: "/" });      // <-- Elimina cookie
     localStorage.removeItem("user");          // <-- Elimina localStorage
     setToken(null);                           // <-- Limpia estado del token
     setUser(null);                            // <-- Limpia estado del user
-    //console.log("AuthProvider logout: Sesión cerrada, redirigiendo...");
+    console.log("AuthProvider logout: Sesión cerrada, redirigiendo...");
     router.push("/");                         // Redirige al login
   };
 

@@ -33,6 +33,7 @@ export default function AddOrdenModal({ isOpen, onClose, onAddOrden }: AddOrdenM
         title: "Información incompleta",
         text: "Por favor, completa todos los campos.",
         icon: "warning",
+        position: "top",
       });
       return;
     }

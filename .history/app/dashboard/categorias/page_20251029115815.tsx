@@ -10,7 +10,6 @@ import { useAuth } from '@/app/context/AuthContext';
 // Importamos las funciones del nuevo store
 import { getCategories, saveCategory, deleteCategory } from '@/lib/category-store'; 
 import { type CategoryItem, type Inventario } from '@/lib/data'; 
-import { showAlert } from '@/components/common/sweetAlert';
 
 export default function CategoriasPage() {
     const { token, logout } = useAuth();
@@ -74,50 +73,36 @@ export default function CategoriasPage() {
     };
 
     // --- FUNCIÓN PARA ELIMINAR (DELETE) ---
-const handleDeleteCategory = async (id: string | number) => {
+    const handleDeleteCategory = async (id: string | number) => {
         const categoryName = categories.find(c => c.id === id)?.nombre || id;
-        // Pregunta con SweetAlert2
-        const result = await showAlert({
-            title: `¿Eliminar categoría?`,
-            text: `¿Estás seguro de eliminar la categoría: ${categoryName}? Esta acción es irreversible.`,
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Sí, eliminar",
-            cancelButtonText: "Cancelar",
-            confirmButtonColor: "#d32f2f",
-            cancelButtonColor: "#3085d6",
-        });
-
-        if (!result.isConfirmed) {
+        
+        if (!window.confirm(`¿Estás seguro de eliminar la categoría: ${categoryName}?`)) {
             return;
         }
-
+        
         const numericId = typeof id === 'string' ? parseInt(id.split('-')[1] || id, 10) : id;
-        setIsDeleting(numericId);
+        setIsDeleting(numericId); // Muestra el spinner
         setError(null);
-
+        
         try {
             if (!token) throw new Error("Token no proporcionado.");
-            await deleteCategory(String(id), token);
+            
+            await deleteCategory(String(id), token); // Llama a la función del store
+            
+            // Si es exitoso, recargar la lista
             await fetchCategories();
+            
         } catch (err: any) {
             console.error("Error al eliminar categoría:", err);
             setError(err.message || "No se pudo eliminar. Revisa la consola.");
-            setTimeout(() => setError(null), 5000);
+            
+            // Mostrar el error por 5 segundos antes de que desaparezca
+            setTimeout(() => setError(null), 5000); 
 
-            // Mostrar error con SweetAlert2
-            await showAlert({
-                title: "Error",
-                text: err.message || "No se pudo eliminar la categoría.",
-                icon: "error",
-                confirmButtonText: "Aceptar",
-                confirmButtonColor: "#d32f2f",
-            });
         } finally {
-            setIsDeleting(null);
+            setIsDeleting(null); // Quita el spinner
         }
     };
-
     
     // --- FUNCIÓN PARA ABRIR EL MODAL EN MODO EDICIÓN ---
     const handleOpenEditModal = (category: CategoryItem) => {

@@ -132,8 +132,7 @@ export default function TraspasosPage() {
         title: "¡Éxito!",
         text: `Traspaso ${status === "APPROVED" ? "aprobado" : "rechazado"}.`,
         icon: "success",
-        position: "top-end",
-        timer: 1500,
+        
       });
       await fetchTraspasos();
     } catch (err: any) {

@@ -29,11 +29,7 @@ export default function AddOrdenModal({ isOpen, onClose, onAddOrden }: AddOrdenM
     e.preventDefault();
     if (!folio || !producto || !cliente || !cantidad || !valorTotal) {
       //alert('Por favor, completa todos los campos.');
-      showAlert({
-        title: "Información incompleta",
-        text: "Por favor, completa todos los campos.",
-        icon: "warning",
-      });
+
       return;
     }
     

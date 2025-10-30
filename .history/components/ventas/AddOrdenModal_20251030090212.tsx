@@ -30,8 +30,8 @@ export default function AddOrdenModal({ isOpen, onClose, onAddOrden }: AddOrdenM
     if (!folio || !producto || !cliente || !cantidad || !valorTotal) {
       //alert('Por favor, completa todos los campos.');
       showAlert({
-        title: "Información incompleta",
-        text: "Por favor, completa todos los campos.",
+        title: "¡Oh no, algo no salió bien!",
+        text: "La descripción (razón del ajuste) es obligatoria.",
         icon: "warning",
       });
       return;

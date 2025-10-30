@@ -10,7 +10,6 @@ import { useAuth } from '@/app/context/AuthContext';
 // Importamos las funciones del nuevo store
 import { getCategories, saveCategory, deleteCategory } from '@/lib/category-store'; 
 import { type CategoryItem, type Inventario } from '@/lib/data'; 
-import { showAlert } from '@/components/common/sweetAlert';
 
 export default function CategoriasPage() {
     const { token, logout } = useAuth();
