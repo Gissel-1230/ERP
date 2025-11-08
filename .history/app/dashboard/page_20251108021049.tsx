@@ -2,7 +2,7 @@
 // app/dashboard/page.tsx
 
 // highlight-start
-import { Bell, CheckCircle, FilePlus, ArrowRight, Warehouse, Settings, Calculator } from 'lucide-react';
+import { Bell, CheckCircle, FilePlus, ArrowRight, Warehouse, Settings } from 'lucide-react';
 // highlight-end
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -114,13 +114,12 @@ export default function DashboardPage() {
             title="Consultar Inventario"
             description="Revisa el stock disponible en los almacenes."
             />
-          )}
           {(userRole == 1 || userRole == 2) &&(
             <ActionCard
-            href="/dashboard/contabilidad"
-            icon={Calculator}
-            title="Acceder a Contabilidad"
-            description="Revisión de polizas."
+            href="/dashboard/almacenes"
+            icon={Warehouse}
+            title="Consultar Inventario"
+            description="Revisa el stock disponible en los almacenes."
             />
           )}
           <ActionCard

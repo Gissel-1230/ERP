@@ -120,7 +120,7 @@ export default function DashboardPage() {
             href="/dashboard/contabilidad"
             icon={Calculator}
             title="Acceder a Contabilidad"
-            description="Revisión de polizas."
+            description="Revisa el stock disponible en los almacenes."
             />
           )}
           <ActionCard

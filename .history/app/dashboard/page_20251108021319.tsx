@@ -113,16 +113,14 @@ export default function DashboardPage() {
             icon={Warehouse}
             title="Consultar Inventario"
             description="Revisa el stock disponible en los almacenes."
-            />
           )}
-          {(userRole == 1 || userRole == 2) &&(
-            <ActionCard
-            href="/dashboard/contabilidad"
-            icon={Calculator}
-            title="Acceder a Contabilidad"
-            description="Revisión de polizas."
-            />
-          )}
+          />
+          <ActionCard
+          href="/dashboard/contabilidad"
+          icon={Calculator}
+          title="Contabilidad"
+          description="Revisión de polizas."
+          />
           <ActionCard
             href="/dashboard/rrhh/tareas"
             icon={CheckCircle}

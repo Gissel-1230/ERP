@@ -8,7 +8,7 @@ import {
   ShoppingCart,
   Users,
   ClipboardList,
-  Calculator,
+  Calcula
   Settings,
   LogOut,
   Tag,
@@ -28,7 +28,6 @@ const navItems = [
   { href: "/dashboard/traspasos", icon: ArrowRightLeft, label: "Traspasos", roles: [1, 2] },
   { href: "/dashboard/ventas", icon: ShoppingCart, label: "Ventas", roles: [1] },
   { href: "/dashboard/requisicion", icon: ClipboardList, label: "Requisición", roles: [1, 2, 3] },
-  { href: "/dashboard/contabilidad", icon: Calculator, label: "Contabilidad", roles: [1, 2] },
 ];
 
 

@@ -118,9 +118,9 @@ export default function DashboardPage() {
           {(userRole == 1 || userRole == 2) &&(
             <ActionCard
             href="/dashboard/contabilidad"
-            icon={Calculator}
-            title="Acceder a Contabilidad"
-            description="Revisión de polizas."
+            icon={Warehouse}
+            title="Consultar Inventario"
+            description="Revisa el stock disponible en los almacenes."
             />
           )}
           <ActionCard

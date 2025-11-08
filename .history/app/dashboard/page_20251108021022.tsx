@@ -115,14 +115,6 @@ export default function DashboardPage() {
             description="Revisa el stock disponible en los almacenes."
             />
           )}
-          {(userRole == 1 || userRole == 2) &&(
-            <ActionCard
-            href="/dashboard/contabilidad"
-            icon={Calculator}
-            title="Acceder a Contabilidad"
-            description="Revisión de polizas."
-            />
-          )}
           <ActionCard
             href="/dashboard/rrhh/tareas"
             icon={CheckCircle}
@@ -132,6 +124,12 @@ export default function DashboardPage() {
           <ActionCard
             href="/dashboard/configuracion"
             icon={Settings}
+            title="Ajustes de Perfil"
+            description="Modifica tus datos personales y contraseña."
+          />
+          <ActionCard
+            href="/dashboard/contabilidad"
+            icon={Calculator}
             title="Ajustes de Perfil"
             description="Modifica tus datos personales y contraseña."
           />
